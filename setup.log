@@ -1,0 +1,6 @@
+Reinicializado el repositorio Git existente en /media/datos/Trabajo/ProjectosAngular/backend/.git/modules/invoice-service/
+error: remoto origin ya existe.
+[main (commit-raíz) f80a326] Initial commit
+ 1 file changed, 1 insertion(+)
+ create mode 100644 README.md
+fatal: no se pudo encontrar ref remota main

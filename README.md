@@ -1,1 +1,28 @@
-# microservicio-invoice
+# INVOICE Microservice
+
+**Fecha de creación**: 2025-03-31
+
+**Autor**: Ing. Persy Morell Guerra e Ing. Dailyn García Dominguez (SoftwarEnTalla CEO)
+
+## Estructura del microservicio
+
+```
+src/
+├── modules/
+│   └── invoice/
+│       ├── commands/
+│       ├── events/
+│       ├── queries/
+│       ├── aggregates/
+│       ├── repositories/
+│       ├── dtos/
+│       ├── controllers/
+│       ├── services/
+│       └── invoice.module.ts
+├── shared/
+│   ├── event-store/
+│   └── messaging/
+├── Dockerfile
+├── docker-compose.yml
+└── package.json
+```
