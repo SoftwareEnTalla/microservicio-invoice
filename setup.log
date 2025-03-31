@@ -4,3 +4,6 @@ error: remoto origin ya existe.
  1 file changed, 1 insertion(+)
  create mode 100644 README.md
 fatal: no se pudo encontrar ref remota main
+Ya en 'main'
+Tu rama está basada en 'origin/main', pero upstream ha desaparecido.
+  (usa "git branch --unset-upstream" para arreglar)
