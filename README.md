@@ -1,7 +1,7 @@
 # INVOICE Microservice
 
 **Fecha de creación**: 2025-03-31
-**Última actualización**: 2025-03-31 12:42:11
+**Última actualización**: 2025-03-31 12:46:30
 
 **Autor**: Ing. Persy Morell Guerra e Ing. Dailyn García Dominguez (SoftwarEnTalla CEO)
 
