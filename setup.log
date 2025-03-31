@@ -13,3 +13,7 @@ Ya en 'main'
 Tu rama está actualizada con 'origin/main'.
 Ya en 'main'
 Tu rama está actualizada con 'origin/main'.
+Reinicializado el repositorio Git existente en /media/datos/Trabajo/ProjectosAngular/backend/.git/modules/invoice-service/
+error: remoto origin ya existe.
+error: no se puede pull con rebase: Tienes cambios sin marcar.
+error: Por favor, confírmalos o guárdalos.
