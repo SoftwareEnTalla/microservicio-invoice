@@ -1,5 +1,8 @@
 import { Cache } from "cache-manager";
+<<<<<<< HEAD
 
+=======
+>>>>>>> e1c3064 (Se refactoriza invoice)
 export type CacheKeyBuilder = (...args: any[]) => string;
 
 export interface CacheOptions {

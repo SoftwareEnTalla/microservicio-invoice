@@ -1,6 +1,7 @@
 // cache.decorator.ts
 import { Inject, Logger } from "@nestjs/common";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
+<<<<<<< HEAD
 import { Cache } from "cache-manager";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -8,6 +9,10 @@ import {
   CacheKeyBuilder,
   CacheableContext,
 } from "../../../interfaces/cacheable";
+=======
+import { v4 as uuidv4 } from "uuid";
+import { CacheOptions, CacheableContext } from "../../../interfaces/cacheable";
+>>>>>>> e1c3064 (Se refactoriza invoice)
 
 export function Cacheable(options: CacheOptions) {
   const injectCache = Inject(CACHE_MANAGER);
@@ -115,3 +120,7 @@ export function Cacheable(options: CacheOptions) {
     return descriptor;
   };
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> e1c3064 (Se refactoriza invoice)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Reinicializado el repositorio Git existente en /media/datos/Trabajo/ProjectosAngular/backend/.git/modules/invoice-service/
 error: remoto origin ya existe.
 [main (commit-raíz) f80a326] Initial commit
@@ -17,3 +18,36 @@ Reinicializado el repositorio Git existente en /media/datos/Trabajo/ProjectosAng
 error: remoto origin ya existe.
 error: no se puede pull con rebase: Tienes cambios sin marcar.
 error: Por favor, confírmalos o guárdalos.
+=======
+hint: Usando 'master' como el nombre de la rama inicial. Este nombre de rama predeterminado
+hint: está sujeto a cambios. Para configurar el nombre de la rama inicial para usar en todos
+hint: de sus nuevos repositorios, reprimiendo esta advertencia, llama a:
+hint:
+hint: 	git config --global init.defaultBranch <nombre>
+hint:
+hint: Los nombres comúnmente elegidos en lugar de 'master' son 'main', 'trunk' y
+hint: 'development'. Se puede cambiar el nombre de la rama recién creada mediante este comando:
+hint:
+hint: 	git branch -m <nombre>
+Inicializado repositorio Git vacío en /media/datos/Trabajo/ProjectosAngular/backend/invoice-service/.git/
+[master (commit-raíz) bc348ad] Initial commit
+ 1 file changed, 1 insertion(+)
+ create mode 100644 README.md
+Desde https://github.com/SoftwareEnTalla/microservicio-invoice
+ * branch            main       -> FETCH_HEAD
+ * [nueva rama]      main       -> origin/main
+hint: Diverging branches can't be fast-forwarded, you need to either:
+hint:
+hint: 	git merge --no-ff
+hint:
+hint: or:
+hint:
+hint: 	git rebase
+hint:
+hint: Disable this message with "git config advice.diverging false"
+fatal: No es posible hacer fast-forward, abortando.
+error: ruta especificada '/media/datos/Trabajo/ProjectosAngular/backend/invoice-service/orders-service' no concordó con ningún archivo conocido por git
+fatal: ruta especificada '/media/datos/Trabajo/ProjectosAngular/backend/invoice-service/orders-service' no concordó con ningún archivo
+fatal: no existe la sección: submodule.orders-service
+Clonando en '/media/datos/Trabajo/ProjectosAngular/backend/invoice-service/orders-service'...
+>>>>>>> e1c3064 (Se refactoriza invoice)

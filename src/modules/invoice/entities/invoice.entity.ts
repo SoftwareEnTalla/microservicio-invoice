@@ -4,16 +4,35 @@ import { CreateInvoiceDto } from '../dtos/createinvoice.dto';
 import { UpdateInvoiceDto } from '../dtos/updateinvoice.dto';
 import { DeleteInvoiceDto } from '../dtos/deleteinvoice.dto';
 import { IsNotEmpty, IsString, validate } from 'class-validator';
+<<<<<<< HEAD
 import { plainToClass, plainToInstance } from 'class-transformer'; 
 import { CreateInvoiceDto } from '../dtos/createinvoice.dto';
 
 
+=======
+import { plainToClass, plainToInstance } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
+import { Field, ObjectType } from "@nestjs/graphql";
+
+@ObjectType()
+>>>>>>> e1c3064 (Se refactoriza invoice)
 @Entity('Invoice')
 export class Invoice extends BaseEntity {
 
   // Propiedades de Invoice
+<<<<<<< HEAD
   @IsString()
   @IsNotEmpty()
+=======
+  @ApiProperty({
+      type: String,
+      nullable: false,
+      description: "Nombre de la instancia de Invoice",
+  })
+  @IsString()
+  @IsNotEmpty()
+  @Field(() => String, { description: "Nombre de la instancia de Invoice", nullable: false })
+>>>>>>> e1c3064 (Se refactoriza invoice)
   private name: string = "";
 
   // Constructor de Invoice

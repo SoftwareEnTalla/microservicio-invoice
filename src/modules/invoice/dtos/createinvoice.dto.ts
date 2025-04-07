@@ -1,8 +1,17 @@
+<<<<<<< HEAD
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsString, IsBoolean, IsDate, IsOptional,IsObject, ValidateNested } from "class-validator";
 import { InputType, Field } from '@nestjs/graphql';  
 import { UpdateInvoiceDto } from './updateinvoice.dto';
 import { InvoiceUnion, isCreateOrUpdateInvoiceDtoType } from "../decorators/invoice.decorators";
+=======
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString, IsBoolean, IsDate, IsOptional,IsObject, ValidateNested } from 'class-validator';
+import { InputType, Field, ObjectType} from '@nestjs/graphql';  
+import { UpdateInvoiceDto } from './updateinvoice.dto';
+import { isCreateOrUpdateInvoiceDtoType } from '../decorators/invoice.decorators';
+
+>>>>>>> e1c3064 (Se refactoriza invoice)
 
 @InputType()
 export class CreateInvoiceDto {
@@ -20,6 +29,7 @@ export class CreateInvoiceDto {
   id?: string;
 
   @ApiProperty({
+<<<<<<< HEAD
     description: "Nombre de instancia CreateInvoice",
     example: "Nombre de instancia CreateInvoice",
   })
@@ -27,10 +37,22 @@ export class CreateInvoiceDto {
   @IsNotEmpty()
   @Field(() => String,{ nullable: false })
   name: string = "";
+=======
+    type: String,
+    description: "Nombre de instancia CreateInvoice",
+    example: "Nombre de instancia CreateInvoice",
+    nullable: false
+  })
+  @IsString()
+  @IsNotEmpty()
+  @Field(() => String, { nullable: false })
+  name: string = '';
+>>>>>>> e1c3064 (Se refactoriza invoice)
 
   // Propiedades predeterminadas de la clase CreateInvoiceDto según especificación del sistema
 
   @ApiProperty({
+<<<<<<< HEAD
     description:"Fecha de creación de la instancia (CreateInvoice).",
     example: "Fecha de creación de la instancia (CreateInvoice).",
   })
@@ -67,6 +89,53 @@ export class CreateInvoiceDto {
   isActive: boolean = false; // Por defecto, el objeto no está activo
 
   // Constructor 
+=======
+    type: Date,
+    description: "Fecha de creación de la instancia (CreateInvoice).",
+    example: "Fecha de creación de la instancia (CreateInvoice).",
+    nullable: false
+  })
+  @IsDate()
+  @IsNotEmpty()
+  @Field(() => Date, { nullable: false })
+  creationDate: Date = new Date(); // Fecha de creación por defecto, con precisión hasta milisegundos
+
+  @ApiProperty({
+    type: Date,
+    description: "Fecha de actualización de la instancia (CreateInvoice).",
+    example: "Fecha de actualización de la instancia (CreateInvoice).",
+    nullable: false
+  })
+  @IsDate()
+  @IsNotEmpty()
+  @Field(() => Date, { nullable: false })
+  modificationDate: Date = new Date(); // Fecha de modificación por defecto, con precisión hasta milisegundos
+
+  @ApiProperty({
+    type: String,
+    description:
+      "Usuario que realiza la creación de la instancia (CreateInvoice).",
+    example: "Usuario que realiza la creación de la instancia (CreateInvoice).",
+    nullable: true
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, { nullable: true })
+  createdBy?: string; // Usuario que crea el objeto
+
+  @ApiProperty({
+    type: Boolean,
+    description: "Estado de activación de la instancia (CreateInvoice).",
+    example: "Estado de activación de la instancia (CreateInvoice).",
+    nullable: false,
+  })
+  @IsBoolean()
+  @IsNotEmpty()
+  @Field(() => Boolean, { nullable: false })
+  isActive: boolean = false; // Por defecto, el objeto no está activo
+
+  // Constructor
+>>>>>>> e1c3064 (Se refactoriza invoice)
   constructor(partial: Partial<CreateInvoiceDto>) {
     Object.assign(this, partial);
   }
@@ -78,16 +147,25 @@ export class CreateInvoiceDto {
     instance.modificationDate = new Date(); // Actualiza la fecha de modificación al momento de la creación
     return instance;
   }
+<<<<<<< HEAD
 }
 
 //Clase dto base
 
         
 
+=======
+
+}
+
+
+        
+>>>>>>> e1c3064 (Se refactoriza invoice)
         @InputType()
         export class InvoiceDto {
           // Propiedades específicas de la clase InvoiceDto en cuestión
 
+<<<<<<< HEAD
           @IsString()
           @IsOptional()
           @Field(() => String,{ nullable: true })
@@ -96,10 +174,23 @@ export class CreateInvoiceDto {
           @IsString()
           @IsNotEmpty()
           @Field(() => String,{ nullable: false })
+=======
+          @ApiProperty({ type: String ,nullable: true, description: 'Identificador único de la instancia' })
+          @IsString()
+          @IsOptional()
+          @Field(() => String, { nullable: true })
+          id?: string;
+
+          @ApiProperty({ type: String ,nullable: false, description: 'Nombre de la instancia' })
+          @IsString()
+          @IsNotEmpty()
+          @Field(() => String, { nullable: false })
+>>>>>>> e1c3064 (Se refactoriza invoice)
           name: string = '';
 
           // Propiedades predeterminadas de la clase InvoiceDto según especificación del sistema
 
+<<<<<<< HEAD
           @IsDate()
           @IsNotEmpty()
           @Field(() => Date,{ nullable: false })
@@ -118,6 +209,85 @@ export class CreateInvoiceDto {
           @IsBoolean()
           @IsNotEmpty()
           @Field(() => Boolean,{ nullable: false })
+=======
+          @ApiProperty({ type: Date ,nullable: false, description: 'Fecha de creaciónde la instancia' })
+          @IsDate()
+          @IsNotEmpty()
+          @Field(() => Date, { nullable: false })
+          creationDate: Date = new Date(); // Fecha de creación por defecto, con precisión hasta milisegundos
+
+          @ApiProperty({ type: Date ,nullable: false, description: 'Fecha de modificación de la instancia' })
+          @IsDate()
+          @IsNotEmpty()
+          @Field(() => Date, { nullable: false })
+          modificationDate: Date = new Date(); // Fecha de modificación por defecto, con precisión hasta milisegundos
+
+          @ApiProperty({ type: String ,nullable: true, description: 'Creador de la instancia' })
+          @IsString()
+          @IsOptional()
+          @Field(() => String, { nullable: true })
+          createdBy?: string; // Usuario que crea el objeto
+
+          @ApiProperty({ type: Boolean ,nullable: false, description: 'Describe si la instancia está activa o no' })
+          @IsBoolean()
+          @IsNotEmpty()
+          @Field(() => Boolean, { nullable: false })
+          isActive: boolean = false; // Por defecto, el objeto no está activo
+
+          // Constructor
+          constructor(partial: Partial<InvoiceDto>) {
+            Object.assign(this, partial);
+          }
+
+          // Método estático para construir la instancia
+          static build(data: Partial<InvoiceDto>): InvoiceDto {
+            const instance = new InvoiceDto(data);
+            instance.creationDate = new Date(); // Actualiza la fecha de creación al momento de la creación
+            instance.modificationDate = new Date(); // Actualiza la fecha de modificación al momento de la creación
+            return instance;
+          }
+        }
+
+        @ObjectType()
+        export class InvoiceOutPutDto {
+          // Propiedades específicas de la clase InvoiceDto en cuestión
+
+          @ApiProperty({ type: String ,nullable: true, description: 'Identificador único de la instancia' })
+          @IsString()
+          @IsOptional()
+          @Field(() => String, { nullable: true })
+          id?: string;
+
+          @ApiProperty({ type: String ,nullable: false, description: 'Nombre de la instancia' })
+          @IsString()
+          @IsNotEmpty()
+          @Field(() => String, { nullable: false })
+          name: string = '';
+
+          // Propiedades predeterminadas de la clase InvoiceDto según especificación del sistema
+          @ApiProperty({ type: Date ,nullable: false, description: 'Fecha de creaciónde la instancia' })
+          @IsDate()
+          @IsNotEmpty()
+          @Field(() => Date, { nullable: false })
+          creationDate: Date = new Date(); // Fecha de creación por defecto, con precisión hasta milisegundos
+
+          @ApiProperty({ type: Date ,nullable: false, description: 'Fecha de modificación de la instancia' })
+          @IsDate()
+          @IsNotEmpty()
+          @Field(() => Date, { nullable: false })
+          modificationDate: Date = new Date(); // Fecha de modificación por defecto, con precisión hasta milisegundos
+
+          @ApiProperty({ type: String ,nullable: true, description: 'Creador de la instancia' })
+          @IsString()
+          @IsOptional()
+          @Field(() => String, { nullable: true })
+          createdBy?: string; // Usuario que crea el objeto
+
+          @ApiProperty({ type: Boolean ,nullable: false, description: 'Describe si la instancia está activa o no' })
+          @IsBoolean()
+          @IsNotEmpty()
+          @Field(() => Boolean, { nullable: false })
+>>>>>>> e1c3064 (Se refactoriza invoice)
           isActive: boolean = false; // Por defecto, el objeto no está activo
 
           // Constructor
@@ -138,6 +308,7 @@ export class CreateInvoiceDto {
 
         @InputType()
         export class CreateOrUpdateInvoiceDto {
+<<<<<<< HEAD
           
           @ApiProperty({
             description: 'Identificador de la instancia CreateInvoice',
@@ -152,14 +323,54 @@ export class CreateInvoiceDto {
           @ApiProperty({
             description: 'Nombre de instancia CreateInvoice',
             example: 'Nombre de instancia CreateInvoice',
+=======
+          @ApiProperty({
+            type: String,
+            description: "Identificador de la instancia CreateInvoice",
+            example: "Nombre de instancia CreateInvoice",
+            nullable: true,
+          })
+          @IsString()
+          @IsOptional()
+          @Field(() => String, { nullable: true })
+          id?: string; // Si tiene ID, es una actualización
+
+          @ApiProperty({
+            type: ()=>CreateInvoiceDto || UpdateInvoiceDto,
+            description: "Nombre de instancia CreateInvoice",
+            example: "Nombre de instancia CreateInvoice",
+            nullable: true
+>>>>>>> e1c3064 (Se refactoriza invoice)
           })
           @IsOptional()
           @IsObject()
           @ValidateNested() // Asegúrate de validar los objetos anidados
+<<<<<<< HEAD
           @isCreateOrUpdateInvoiceDtoType({ message: 'input debe ser un objeto de tipo CreateInvoiceDto o UpdateInvoiceDto'}) // Usar class-transformer para la transformación de tipos
           @Field(() => CreateInvoiceDto, { nullable: true }) // Asegúrate de que el campo sea nullable si es opcional
           input?: CreateInvoiceDto | UpdateInvoiceDto;
         }
+=======
+          @isCreateOrUpdateInvoiceDtoType({
+            message:
+              "input debe ser un objeto de tipo CreateInvoiceDto o UpdateInvoiceDto",
+          }) // Usar class-transformer para la transformación de tipos
+          @Field(() => CreateInvoiceDto, { nullable: true }) // Asegúrate de que el campo sea nullable si es opcional
+          input?: CreateInvoiceDto | UpdateInvoiceDto;
+        }
+
+        @InputType()
+        export class InvoiceValueInput {
+          @ApiProperty({ type: String ,nullable: false, description: 'Campo de filtro' })
+          @Field({ nullable: false })
+          fieldName: string = 'id';
+
+          @ApiProperty({ type: InvoiceDto ,nullable: false, description: 'Valor del filtro' })
+          @Field(() => InvoiceDto, { nullable: false })
+          fieldValue: any; // Permite cualquier tipo
+        }
+
+>>>>>>> e1c3064 (Se refactoriza invoice)
         
 
 
