@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { Controller } from '@nestjs/common';
 import { InvoiceCommandService } from '../services/invoicecommand.service';
 import { FindManyOptions } from "typeorm";
@@ -12,6 +13,8 @@ export class InvoiceCommandController {
   // Implementar endpoints aquí
 }
 =======
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
 import {
   Controller,
   Post,
@@ -219,4 +222,7 @@ export class InvoiceCommandController {
   }
 }
 
+<<<<<<< HEAD
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)

@@ -1,14 +1,20 @@
 import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { InvoiceDto, CreateInvoiceDto, CreateOrUpdateInvoiceDto } from "../dtos/createinvoice.dto";
 =======
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
 import {
   InvoiceDto,
   CreateInvoiceDto,
   CreateOrUpdateInvoiceDto,
   InvoiceValueInput,
 } from "../dtos/createinvoice.dto";
+<<<<<<< HEAD
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
 import { Invoice } from "../entities/invoice.entity";
 import {
   CreateInvoiceCommand,
@@ -16,6 +22,7 @@ import {
   DeleteInvoiceCommand,
 } from "../commands/exporting.command";
 import { CommandBus } from "@nestjs/cqrs";
+<<<<<<< HEAD
 <<<<<<< HEAD
 import { UpdateInvoiceDto } from "../dtos/updateinvoice.dto";
 
@@ -25,6 +32,8 @@ import { GraphQLJSON } from 'graphql-type-json';
 @Resolver(() => InvoiceDto)
 export class InvoiceResolver {
 =======
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
 import { InvoiceQueryService } from "../services/invoicequery.service";
 
 import { UpdateInvoiceDto } from "../dtos/updateinvoice.dto";
@@ -41,12 +50,16 @@ import { LoggerClient } from "src/common/logger/logger.client";
 export class InvoiceResolver {
 
    //Constructor del resolver de Invoice
+<<<<<<< HEAD
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
   constructor(
     private readonly service: InvoiceQueryService,
     private readonly commandBus: CommandBus
   ) {}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
   @Mutation(() => CreateInvoiceDto)
   async createInvoice(
@@ -96,6 +109,8 @@ async createOrUpdateInvoice(
   @Query(() => InvoiceDto)
   invoice(@Args("id") id: string): Promise<Invoice | null> {
 =======
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
   @LogExecutionTime({
     layer: 'resolver',
     callback: async (logData, client) => {
@@ -222,11 +237,15 @@ async createOrUpdateInvoice(
   async invoice(
     @Args("id", { type: () => String }) id: string
   ): Promise<InvoiceResponse<Invoice>> {
+<<<<<<< HEAD
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
     return this.service.findById(id);
   }
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
   @Query(() => [InvoiceDto])
   async invoicesByField(
@@ -278,6 +297,8 @@ async findOneInvoiceOrFail(
 }
 
 =======
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
 @LogExecutionTime({
     layer: 'resolver',
     callback: async (logData, client) => {
@@ -407,4 +428,7 @@ async findOneInvoiceOrFail(
 }
 
 
+<<<<<<< HEAD
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)

@@ -1,9 +1,13 @@
 import { createHash } from "crypto";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { plainToClass } from "class-transformer";
 =======
 import { ClassConstructor, plainToClass } from "class-transformer";
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+import { ClassConstructor, plainToClass } from "class-transformer";
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
 import { validateOrReject } from "class-validator";
 
 // Sobrecarga de la función
@@ -30,6 +34,7 @@ export function generateCacheKey<Type>(
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 export async function transformAndValidate<T>(
   partialDto: Partial<T>
 ): Promise<T> {
@@ -39,6 +44,8 @@ export async function transformAndValidate<T>(
   return dto;
 }
 =======
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
 // Sobrecarga 1: Cuando se pasa la clase explícitamente
 export async function transformAndValidate<T extends object>(
   cls: ClassConstructor<T>,
@@ -113,4 +120,7 @@ export function fromObject<T extends object>(
   Object.assign(instance, obj);
   return instance;
 }
+<<<<<<< HEAD
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)

@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { Injectable } from '@nestjs/common';
 import {
   FindManyOptions,
@@ -59,6 +60,8 @@ export class InvoiceQueryService {
   }
 
 =======
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
 import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { FindManyOptions } from "typeorm";
 import { Invoice } from "../entities/invoice.entity";
@@ -283,11 +286,15 @@ export class InvoiceQueryService {
       .registerClient(InvoiceQueryService.name)
       .get(InvoiceQueryService.name),
   })
+<<<<<<< HEAD
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
   async count(): Promise<number> {
     return this.repository.count();
   }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
   async findAndCount(where?: Record<string, any>): Promise<[Invoice[], number]> {
     return this.repository.findAndCount({
@@ -312,6 +319,8 @@ export class InvoiceQueryService {
   }
 }
 =======
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
  
 
   @LogExecutionTime({
@@ -433,4 +442,7 @@ export class InvoiceQueryService {
 
 
 
+<<<<<<< HEAD
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)

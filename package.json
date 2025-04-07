@@ -16,10 +16,14 @@
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "test": "jest",
 =======
     "test": "NODE_PATH=./dist jest -r tsconfig-paths/register",
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+    "test": "NODE_PATH=./dist jest -r tsconfig-paths/register",
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
@@ -30,9 +34,13 @@
     "@jsverse/transloco": "^7.6.1",
     "@jsverse/transloco-utils": "^7.0.2",
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     "@nestjs/apollo": "^13.0.4",
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+    "@nestjs/apollo": "^13.0.4",
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
     "@nestjs/cache-manager": "^3.0.1",
     "@nestjs/common": "^11.0.11",
     "@nestjs/config": "^4.0.1",
@@ -44,17 +52,25 @@
     "@nestjs/typeorm": "^11.0.0",
     "@ngneat/transloco": "^6.0.4",
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     "apollo-server-express": "^3.13.0",
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+    "apollo-server-express": "^3.13.0",
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
     "cache-manager": "^6.4.1",
     "cache-manager-redis-store": "^3.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     "crypto-js": "^4.2.0",
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+    "crypto-js": "^4.2.0",
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
     "dotenv": "^16.4.7",
     "esm": "^3.2.25",
     "graphql": "^16.10.0",
@@ -64,9 +80,13 @@
     "nestjs-i18n": "^10.5.1",
     "object-hash": "^3.0.0",
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     "passport-headerapikey": "^1.2.2",
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+    "passport-headerapikey": "^1.2.2",
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
     "pg": "^8.13.1",
     "rxjs": "^7.8.2",
     "uuid": "^11.1.0",
@@ -88,9 +108,13 @@
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     "tsconfig-paths": "^4.2.0",
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+    "tsconfig-paths": "^4.2.0",
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
     "typeorm": "^0.3.21",
     "typescript": "^5.8.2"
   },
@@ -113,8 +137,14 @@
   }
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 
 
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+
+
+
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)

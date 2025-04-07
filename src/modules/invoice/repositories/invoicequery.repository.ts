@@ -7,6 +7,7 @@ import {
   MoreThanOrEqual,
   Repository,
 <<<<<<< HEAD
+<<<<<<< HEAD
 } from 'typeorm';
 import { BaseEntity } from '../entities/base.entity';
 import { Invoice } from '../entities/invoice.entity';
@@ -88,6 +89,8 @@ export class InvoiceQueryRepository {
     return entity;
   }
 =======
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
   DeleteResult,
   UpdateResult,
 } from 'typeorm';
@@ -277,5 +280,8 @@ import { LoggerClient } from 'src/common/logger/logger.client';
       }
       return entity;
     }
+<<<<<<< HEAD
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
 }

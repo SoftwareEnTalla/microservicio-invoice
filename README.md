@@ -1,16 +1,21 @@
 # INVOICE Microservice
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 **Fecha de creación**: 2025-03-31
 =======
 **Fecha de creación**: 2025-04-06
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+**Fecha de creación**: 2025-04-06
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
 
 **Autor**: Ing. Persy Morell Guerra e Ing. Dailyn García Dominguez (SoftwarEnTalla CEO)
 
 ## Estructura del microservicio
 
 ```
+<<<<<<< HEAD
 <<<<<<< HEAD
 src/
 ├── modules/
@@ -31,6 +36,8 @@ src/
 ├── docker-compose.yml
 └── package.json
 =======
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
 .
 | |____branches
 | |____hooks
@@ -43,7 +50,11 @@ src/
 | |____objects
 | | |____9c
 | | |____b9
+<<<<<<< HEAD
 | | |____bc
+=======
+| | |____fd
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
 | | |____info
 | | |____pack
 | |____refs
@@ -96,5 +107,8 @@ src/
 | | | | |____messaging
 | | | |____types
 | |____utils
+<<<<<<< HEAD
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
 ```

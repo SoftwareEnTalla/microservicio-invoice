@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { Module } from '@nestjs/common';
 import { InvoiceCommandController } from '../controllers/invoicecommand.controller';
 import { InvoiceCommandService } from '../services/invoicecommand.service';
@@ -23,6 +24,8 @@ import { InvoiceLoggingInterceptor } from '../interceptors/invoice.logging.inter
 })
 export class InvoiceModule {}
 =======
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
 import { Module } from "@nestjs/common";
 import { InvoiceCommandController } from "../controllers/invoicecommand.controller";
 import { InvoiceQueryController } from "../controllers/invoicequery.controller";
@@ -80,4 +83,7 @@ import { InvoiceLoggingInterceptor } from "../interceptors/invoice.logging.inter
 })
 export class InvoiceModule {}
 
+<<<<<<< HEAD
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)

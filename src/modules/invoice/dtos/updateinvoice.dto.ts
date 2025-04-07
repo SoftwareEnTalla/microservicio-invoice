@@ -1,17 +1,23 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsString, IsBoolean, IsDate, IsOptional,IsObject, ValidateNested } from "class-validator";
 import { InputType, Field } from '@nestjs/graphql';  
 import { UpdateInvoiceDto } from './updateinvoice.dto';
 import { InvoiceUnion, isCreateOrUpdateInvoiceDtoType } from "../decorators/invoice.decorators";
 =======
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsBoolean, IsDate, IsOptional,IsObject, ValidateNested } from 'class-validator';
 import { InputType, Field, ObjectType} from '@nestjs/graphql';  
 import { CreateInvoiceDto } from './createinvoice.dto';
 import { isCreateOrUpdateInvoiceDtoType } from '../decorators/invoice.decorators';
 
+<<<<<<< HEAD
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
 
 @InputType()
 export class UpdateInvoiceDto {
@@ -29,6 +35,7 @@ export class UpdateInvoiceDto {
   id: string='';
 
   @ApiProperty({
+<<<<<<< HEAD
 <<<<<<< HEAD
     description: "Nombre de instancia UpdateInvoice",
     example: "Nombre de instancia UpdateInvoice",
@@ -79,6 +86,8 @@ export class UpdateInvoiceDto {
   // Constructor 
   constructor(partial: Partial<UpdateInvoiceDto>) {
 =======
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
     type: String,
     description: "Nombre de instancia CreateInvoice",
     example: "Nombre de instancia CreateInvoice",
@@ -138,11 +147,15 @@ export class UpdateInvoiceDto {
 
   // Constructor
   constructor(partial: Partial<CreateInvoiceDto>) {
+<<<<<<< HEAD
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
     Object.assign(this, partial);
   }
 
   // Método estático para construir la instancia
+<<<<<<< HEAD
 <<<<<<< HEAD
   static build(data: Partial<UpdateInvoiceDto>): UpdateInvoiceDto {
     const instance = new UpdateInvoiceDto(data);
@@ -150,10 +163,15 @@ export class UpdateInvoiceDto {
   static build(data: Partial<CreateInvoiceDto>): CreateInvoiceDto {
     const instance = new CreateInvoiceDto(data);
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+  static build(data: Partial<CreateInvoiceDto>): CreateInvoiceDto {
+    const instance = new CreateInvoiceDto(data);
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
     instance.creationDate = new Date(); // Actualiza la fecha de creación al momento de la creación
     instance.modificationDate = new Date(); // Actualiza la fecha de modificación al momento de la creación
     return instance;
   }
+<<<<<<< HEAD
 <<<<<<< HEAD
 }
 
@@ -163,6 +181,11 @@ export class UpdateInvoiceDto {
 }
 
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+
+}
+
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
 
 
 

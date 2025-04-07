@@ -2,6 +2,7 @@
 import { Inject, Logger } from "@nestjs/common";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { Cache } from "cache-manager";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -13,6 +14,10 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { CacheOptions, CacheableContext } from "../../../interfaces/cacheable";
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+import { v4 as uuidv4 } from "uuid";
+import { CacheOptions, CacheableContext } from "../../../interfaces/cacheable";
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
 
 export function Cacheable(options: CacheOptions) {
   const injectCache = Inject(CACHE_MANAGER);
@@ -121,6 +126,10 @@ export function Cacheable(options: CacheOptions) {
   };
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)

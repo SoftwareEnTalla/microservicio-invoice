@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { Injectable } from '@nestjs/common';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { Invoice } from '../entities/invoice.entity';
@@ -41,6 +42,8 @@ export class InvoiceCommandService {
   }
 }
 =======
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
 import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { DeleteResult, UpdateResult } from "typeorm";
 import { Invoice } from "../entities/invoice.entity";
@@ -291,4 +294,7 @@ export class InvoiceCommandService {
   }
 }
 
+<<<<<<< HEAD
 >>>>>>> e1c3064 (Se refactoriza invoice)
+=======
+>>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
