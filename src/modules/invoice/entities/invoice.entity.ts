@@ -4,35 +4,15 @@ import { CreateInvoiceDto } from '../dtos/createinvoice.dto';
 import { UpdateInvoiceDto } from '../dtos/updateinvoice.dto';
 import { DeleteInvoiceDto } from '../dtos/deleteinvoice.dto';
 import { IsNotEmpty, IsString, validate } from 'class-validator';
-<<<<<<< HEAD
-<<<<<<< HEAD
-import { plainToClass, plainToInstance } from 'class-transformer'; 
-import { CreateInvoiceDto } from '../dtos/createinvoice.dto';
-
-
-=======
-=======
->>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
 import { plainToClass, plainToInstance } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { Field, ObjectType } from "@nestjs/graphql";
 
 @ObjectType()
-<<<<<<< HEAD
->>>>>>> e1c3064 (Se refactoriza invoice)
-=======
->>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
 @Entity('Invoice')
 export class Invoice extends BaseEntity {
 
   // Propiedades de Invoice
-<<<<<<< HEAD
-<<<<<<< HEAD
-  @IsString()
-  @IsNotEmpty()
-=======
-=======
->>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
   @ApiProperty({
       type: String,
       nullable: false,
@@ -41,10 +21,6 @@ export class Invoice extends BaseEntity {
   @IsString()
   @IsNotEmpty()
   @Field(() => String, { description: "Nombre de la instancia de Invoice", nullable: false })
-<<<<<<< HEAD
->>>>>>> e1c3064 (Se refactoriza invoice)
-=======
->>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
   private name: string = "";
 
   // Constructor de Invoice

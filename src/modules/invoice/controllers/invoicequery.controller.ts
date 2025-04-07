@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-import { Controller } from '@nestjs/common';
-import { InvoiceQueryService } from '../services/invoicequery.service';
-import { FindManyOptions } from "typeorm";
-import { ApiTags } from '@nestjs/swagger';
-
-@ApiTags('InvoiceQueryController')
-@Controller('InvoiceQueryController')
-export class InvoiceQueryController {
-  constructor(private readonly service: InvoiceQueryService) {}
-  
-  // Implementar endpoints aquí
-}
-=======
-=======
->>>>>>> 7259216 (Mensaje descriptivo de tus cambios)
 import {
   Controller,
   Get,
@@ -336,7 +319,3 @@ export class InvoiceQueryController {
 }
 
 
-<<<<<<< HEAD
->>>>>>> e1c3064 (Se refactoriza invoice)
-=======
->>>>>>> 7259216 (Mensaje descriptivo de tus cambios)

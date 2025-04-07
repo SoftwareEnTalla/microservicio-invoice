@@ -6,7 +6,7 @@ import { INestApplication, Logger } from "@nestjs/common";
 import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
 import 'tsconfig-paths/register';
 import { InvoiceModule } from "@modules/invoice/modules/invoice.module";
-
+import { setupSwagger } from "@config/swagger-config";
 
 // Método seguro para inspeccionar rutas
 function printRoutes(app: INestApplication<any>) {
@@ -83,22 +83,13 @@ async function bootstrap() {
     const globalPrefix = "api";
     app.setGlobalPrefix(globalPrefix);
     
-    const swaggerConfig = new DocumentBuilder()
-      .setTitle("Invoice Service API")
-      .setDescription('Combined Command & Query API for managing Invoice')
-      .setVersion('1.0')
-      .addTag('invoice-command')
-      .addTag('invoice-query')
-      .build();
-
-     
-    console.log(`ℹ️ Creando instancia de documentación swagger para el módulo InvoiceAppModule...`);
-    const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig,{
-    include: [InvoiceModule], // ✅ Fuerza incluir todo el módulo
-    deepScanRoutes: true    // ✅ Busca en profundidad
-    });
-    const swaggerPath = "api-docs";
-    SwaggerModule.setup(swaggerPath, app, swaggerDocument);
+    const swaggerPath = setupSwagger(
+      app,
+      "api-docs",
+      "Invoice Service API",
+      "API completa para gestión de Invoices con documentación automática",
+      "1.0"
+    );
 
     const port = process.env.PORT || 3000;
     const host = process.env.HOST || "localhost";
