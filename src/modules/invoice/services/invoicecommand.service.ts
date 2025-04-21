@@ -26,12 +26,20 @@ export class InvoiceCommandService {
     //Inicialice aquí propiedades o atributos
   }
 
-
   @LogExecutionTime({
     layer: "service",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceCommandService.name)
@@ -67,12 +75,20 @@ export class InvoiceCommandService {
     }
   }
 
-
   @LogExecutionTime({
     layer: "service",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceCommandService.name)
@@ -109,12 +125,20 @@ export class InvoiceCommandService {
     }
   }
 
-
   @LogExecutionTime({
     layer: "service",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceCommandService.name)
@@ -151,12 +175,20 @@ export class InvoiceCommandService {
     }
   }
 
-
   @LogExecutionTime({
     layer: "service",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceCommandService.name)
@@ -192,11 +224,20 @@ export class InvoiceCommandService {
     }
   }
 
-   @LogExecutionTime({
+  @LogExecutionTime({
     layer: "service",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceCommandService.name)
@@ -233,7 +274,16 @@ export class InvoiceCommandService {
     layer: "service",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceCommandService.name)
@@ -247,4 +297,3 @@ export class InvoiceCommandService {
     return await this.repository.bulkDelete(ids);
   }
 }
-

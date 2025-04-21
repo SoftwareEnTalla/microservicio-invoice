@@ -26,24 +26,32 @@ import { LoggerClient } from "src/common/logger/logger.client";
 //@UseGuards(JwtGraphQlAuthGuard)
 @Resolver(() => Invoice)
 export class InvoiceResolver {
-
-   //Constructor del resolver de Invoice
+  //Constructor del resolver de Invoice
   constructor(
     private readonly service: InvoiceQueryService,
     private readonly commandBus: CommandBus
   ) {}
 
   @LogExecutionTime({
-    layer: 'resolver',
+    layer: "resolver",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceResolver.name)
 
       .get(InvoiceResolver.name),
-    })
+  })
   // Mutaciones
   @Mutation(() => InvoiceResponse<Invoice>)
   async createInvoice(
@@ -52,18 +60,26 @@ export class InvoiceResolver {
     return this.commandBus.execute(new CreateInvoiceCommand(input));
   }
 
-
-@LogExecutionTime({
-    layer: 'resolver',
+  @LogExecutionTime({
+    layer: "resolver",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceResolver.name)
 
       .get(InvoiceResolver.name),
-    })
+  })
   @Mutation(() => InvoiceResponse<Invoice>)
   async updateInvoice(
     @Args("id", { type: () => String }) id: string,
@@ -72,18 +88,26 @@ export class InvoiceResolver {
     return this.commandBus.execute(new UpdateInvoiceCommand(id, input));
   }
 
-
-@LogExecutionTime({
-    layer: 'resolver',
+  @LogExecutionTime({
+    layer: "resolver",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceResolver.name)
 
       .get(InvoiceResolver.name),
-    })
+  })
   @Mutation(() => InvoiceResponse<Invoice>)
   async createOrUpdateInvoice(
     @Args("data", { type: () => CreateOrUpdateInvoiceDto })
@@ -103,18 +127,26 @@ export class InvoiceResolver {
     return this.commandBus.execute(new CreateInvoiceCommand(data.input));
   }
 
-
-@LogExecutionTime({
-    layer: 'resolver',
+  @LogExecutionTime({
+    layer: "resolver",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceResolver.name)
 
       .get(InvoiceResolver.name),
-    })
+  })
   @Mutation(() => Boolean)
   async deleteInvoice(
     @Args("id", { type: () => String }) id: string
@@ -122,18 +154,26 @@ export class InvoiceResolver {
     return this.commandBus.execute(new DeleteInvoiceCommand(id));
   }
 
-
-@LogExecutionTime({
-    layer: 'resolver',
+  @LogExecutionTime({
+    layer: "resolver",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceResolver.name)
 
       .get(InvoiceResolver.name),
-    })
+  })
   // Queries
   @Query(() => InvoicesResponse<Invoice>)
   async invoices(
@@ -143,18 +183,26 @@ export class InvoiceResolver {
     return this.service.findAll(options, paginationArgs);
   }
 
-
-@LogExecutionTime({
-    layer: 'resolver',
+  @LogExecutionTime({
+    layer: "resolver",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceResolver.name)
 
       .get(InvoiceResolver.name),
-    })
+  })
   @Query(() => InvoicesResponse<Invoice>)
   async invoice(
     @Args("id", { type: () => String }) id: string
@@ -162,18 +210,26 @@ export class InvoiceResolver {
     return this.service.findById(id);
   }
 
-
-@LogExecutionTime({
-    layer: 'resolver',
+  @LogExecutionTime({
+    layer: "resolver",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceResolver.name)
 
       .get(InvoiceResolver.name),
-    })
+  })
   @Query(() => InvoicesResponse<Invoice>)
   async invoicesByField(
     @Args("field", { type: () => String }) field: string,
@@ -188,18 +244,26 @@ export class InvoiceResolver {
     );
   }
 
-
-@LogExecutionTime({
-    layer: 'resolver',
+  @LogExecutionTime({
+    layer: "resolver",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceResolver.name)
 
       .get(InvoiceResolver.name),
-    })
+  })
   @Query(() => InvoicesResponse<Invoice>)
   async invoicesWithPagination(
     @Args("page", { type: () => Number, defaultValue: 1 }) page: number,
@@ -212,35 +276,51 @@ export class InvoiceResolver {
     return this.service.findWithPagination({}, paginationArgs);
   }
 
-
-@LogExecutionTime({
-    layer: 'resolver',
+  @LogExecutionTime({
+    layer: "resolver",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceResolver.name)
 
       .get(InvoiceResolver.name),
-    })
+  })
   @Query(() => Number)
   async totalInvoices(): Promise<number> {
     return this.service.count();
   }
 
-
-@LogExecutionTime({
-    layer: 'resolver',
+  @LogExecutionTime({
+    layer: "resolver",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceResolver.name)
 
       .get(InvoiceResolver.name),
-    })
+  })
   @Query(() => InvoicesResponse<Invoice>)
   async searchInvoices(
     @Args("where", { type: () => InvoiceDto, nullable: false })
@@ -250,18 +330,26 @@ export class InvoiceResolver {
     return invoices;
   }
 
-
-@LogExecutionTime({
-    layer: 'resolver',
+  @LogExecutionTime({
+    layer: "resolver",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceResolver.name)
 
       .get(InvoiceResolver.name),
-    })
+  })
   @Query(() => InvoiceResponse<Invoice>, { nullable: true })
   async findOneInvoice(
     @Args("where", { type: () => InvoiceDto, nullable: false })
@@ -270,18 +358,26 @@ export class InvoiceResolver {
     return this.service.findOne(where);
   }
 
-
-@LogExecutionTime({
-    layer: 'resolver',
+  @LogExecutionTime({
+    layer: "resolver",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceResolver.name)
 
       .get(InvoiceResolver.name),
-    })
+  })
   @Query(() => InvoiceResponse<Invoice>)
   async findOneInvoiceOrFail(
     @Args("where", { type: () => InvoiceDto, nullable: false })
@@ -290,5 +386,3 @@ export class InvoiceResolver {
     return this.service.findOneOrFail(where);
   }
 }
-
-

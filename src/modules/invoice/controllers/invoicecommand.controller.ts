@@ -9,7 +9,13 @@ import {
   Get,
   Query,
 } from "@nestjs/common";
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from "@nestjs/swagger";
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiParam,
+} from "@nestjs/swagger";
 import { InvoiceCommandService } from "../services/invoicecommand.service";
 
 import { DeleteResult } from "typeorm";
@@ -27,14 +33,11 @@ import { BadRequestException } from "@nestjs/common";
 @ApiTags("Invoice Command")
 @Controller("invoices/command")
 export class InvoiceCommandController {
-
   #logger = new Logger(InvoiceCommandController.name);
 
   //Constructor del controlador: InvoiceCommandController
   constructor(private readonly service: InvoiceCommandService) {}
 
-  
-  
   @ApiOperation({ summary: "Create a new invoice" })
   @ApiBody({ type: CreateInvoiceDto })
   @ApiResponse({ status: 201, type: InvoiceResponse<Invoice> })
@@ -43,7 +46,16 @@ export class InvoiceCommandController {
     layer: "controller",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceCommandController.name)
@@ -66,8 +78,6 @@ export class InvoiceCommandController {
     }
   }
 
-  
-  
   @ApiOperation({ summary: "Create multiple invoices" })
   @ApiBody({ type: [CreateInvoiceDto] })
   @ApiResponse({ status: 201, type: InvoicesResponse<Invoice> })
@@ -76,7 +86,16 @@ export class InvoiceCommandController {
     layer: "controller",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceCommandController.name)
@@ -99,8 +118,6 @@ export class InvoiceCommandController {
     }
   }
 
-  
-  
   @ApiOperation({ summary: "Update an invoice" })
   @ApiParam({
     name: "id",
@@ -121,7 +138,16 @@ export class InvoiceCommandController {
     layer: "controller",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceCommandController.name)
@@ -151,8 +177,6 @@ export class InvoiceCommandController {
     }
   }
 
-  
-  
   @ApiOperation({ summary: "Update multiple invoices" })
   @ApiBody({ type: [UpdateInvoiceDto] })
   @ApiResponse({ status: 200, type: InvoicesResponse<Invoice> })
@@ -161,7 +185,16 @@ export class InvoiceCommandController {
     layer: "controller",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceCommandController.name)
@@ -184,11 +217,12 @@ export class InvoiceCommandController {
     }
   }
 
-  
-  
-  @ApiOperation({ summary: "Delete an invoice" })   
-  @ApiResponse({ status: 200, type: InvoiceResponse<Invoice>,description:
-    "Instancia de Invoice eliminada satisfactoriamente.", })
+  @ApiOperation({ summary: "Delete an invoice" })
+  @ApiResponse({
+    status: 200,
+    type: InvoiceResponse<Invoice>,
+    description: "Instancia de Invoice eliminada satisfactoriamente.",
+  })
   @ApiResponse({
     status: 400,
     description:
@@ -199,7 +233,16 @@ export class InvoiceCommandController {
     layer: "controller",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceCommandController.name)
@@ -207,7 +250,6 @@ export class InvoiceCommandController {
   })
   async delete(@Param("id") id: string): Promise<InvoiceResponse<Invoice>> {
     try {
-       
       const result = await this.service.delete(id);
 
       if (!result) {
@@ -221,8 +263,6 @@ export class InvoiceCommandController {
     }
   }
 
-  
-  
   @ApiOperation({ summary: "Delete multiple invoices" })
   @ApiResponse({ status: 200, type: DeleteResult })
   @Delete("bulk")
@@ -230,7 +270,16 @@ export class InvoiceCommandController {
     layer: "controller",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceCommandController.name)
@@ -240,4 +289,3 @@ export class InvoiceCommandController {
     return await this.service.bulkDelete(ids);
   }
 }
-

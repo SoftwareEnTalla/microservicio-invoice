@@ -26,7 +26,16 @@ export class InvoiceQueryService {
     layer: "service",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceQueryService.name)
@@ -51,7 +60,16 @@ export class InvoiceQueryService {
     layer: "service",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceQueryService.name)
@@ -88,7 +106,16 @@ export class InvoiceQueryService {
     layer: "service",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceQueryService.name)
@@ -119,13 +146,20 @@ export class InvoiceQueryService {
     }
   }
 
-
-
   @LogExecutionTime({
     layer: "service",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceQueryService.name)
@@ -169,13 +203,21 @@ export class InvoiceQueryService {
       return Helper.throwCachedError(error);
     }
   }
- 
 
   @LogExecutionTime({
     layer: "service",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceQueryService.name)
@@ -209,14 +251,21 @@ export class InvoiceQueryService {
       return Helper.throwCachedError(error);
     }
   }
-  
-
 
   @LogExecutionTime({
     layer: "service",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceQueryService.name)
@@ -226,13 +275,20 @@ export class InvoiceQueryService {
     return this.repository.count();
   }
 
- 
-
   @LogExecutionTime({
     layer: "service",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceQueryService.name)
@@ -272,20 +328,28 @@ export class InvoiceQueryService {
     }
   }
 
-
-
-
   @LogExecutionTime({
     layer: "service",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceQueryService.name)
       .get(InvoiceQueryService.name),
   })
-  async findOne(where?: Record<string, any>): Promise<InvoiceResponse<Invoice>> {
+  async findOne(
+    where?: Record<string, any>
+  ): Promise<InvoiceResponse<Invoice>> {
     try {
       const entity = await this.repository.findOne({
         where: where,
@@ -308,12 +372,20 @@ export class InvoiceQueryService {
     }
   }
 
-
   @LogExecutionTime({
     layer: "service",
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      return await client.send(logData);
+      try {
+        return await client.send(logData);
+      } catch (error) {
+        console.info(
+          "Ha ocurrido un error al enviar la traza de log: ",
+          logData
+        );
+        console.info("ERROR-LOG: ", error);
+        throw error;
+      }
     },
     client: new LoggerClient()
       .registerClient(InvoiceQueryService.name)
@@ -344,6 +416,3 @@ export class InvoiceQueryService {
     }
   }
 }
-
-
-
