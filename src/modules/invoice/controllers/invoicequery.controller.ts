@@ -8,7 +8,13 @@ import {
 } from "@nestjs/common";
 import { InvoiceQueryService } from "../services/invoicequery.service";
 import { FindManyOptions } from "typeorm";
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiParam } from "@nestjs/swagger";
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiQuery,
+  ApiParam,
+} from "@nestjs/swagger";
 import { LogExecutionTime } from "src/common/logger/loggers.functions";
 import { InvoiceResponse, InvoicesResponse } from "../types/invoice.types";
 import { LoggerClient } from "src/common/logger/logger.client";
@@ -31,7 +37,7 @@ export class InvoiceQueryController {
   @ApiQuery({ name: "page", required: false, type: Number })
   @ApiQuery({ name: "size", required: false, type: Number })
   @ApiQuery({ name: "sort", required: false, type: String })
-  @ApiQuery({ name: "order", required: false, type: ()=>Order })
+  @ApiQuery({ name: "order", required: false, type: () => Order })
   @ApiQuery({ name: "search", required: false, type: String })
   @ApiQuery({ name: "initDate", required: false, type: Date })
   @ApiQuery({ name: "endDate", required: false, type: Date })
@@ -45,10 +51,9 @@ export class InvoiceQueryController {
       .get(InvoiceQueryService.name),
   })
   async findAll(
-    @Query("options") options?: FindManyOptions<Invoice>    
+    @Query("options") options?: FindManyOptions<Invoice>
   ): Promise<InvoicesResponse<Invoice>> {
     try {
-     
       const invoices = await this.service.findAll(options);
       this.#logger.verbose("Retrieving all invoice");
       return invoices;
@@ -62,7 +67,12 @@ export class InvoiceQueryController {
   @ApiOperation({ summary: "Get invoice by ID" })
   @ApiResponse({ status: 200, type: InvoiceResponse<Invoice> })
   @ApiResponse({ status: 404, description: "Invoice not found" })
-  @ApiParam({ name: 'id', required: true, description: 'ID of the invoice to retrieve', type: String })
+  @ApiParam({
+    name: "id",
+    required: true,
+    description: "ID of the invoice to retrieve",
+    type: String,
+  })
   @LogExecutionTime({
     layer: "controller",
     callback: async (logData, client) => {
@@ -89,8 +99,18 @@ export class InvoiceQueryController {
 
   @Get("field/:field") // Asegúrate de que el endpoint esté definido correctamente
   @ApiOperation({ summary: "Find invoice by specific field" })
-  @ApiQuery({ name: "value", required: true, description: 'Value to search for', type: String }) // Documenta el parámetro de consulta
-  @ApiParam({ name: 'field', required: true, description: 'Field to filter invoice', type: String }) // Documenta el parámetro de la ruta
+  @ApiQuery({
+    name: "value",
+    required: true,
+    description: "Value to search for",
+    type: String,
+  }) // Documenta el parámetro de consulta
+  @ApiParam({
+    name: "field",
+    required: true,
+    description: "Field to filter invoice",
+    type: String,
+  }) // Documenta el parámetro de la ruta
   @ApiResponse({ status: 200, type: InvoicesResponse })
   @LogExecutionTime({
     layer: "controller",
@@ -127,7 +147,6 @@ export class InvoiceQueryController {
     }
   }
 
-
   @Get("pagination")
   @ApiOperation({ summary: "Find invoices with pagination" })
   @ApiResponse({ status: 200, type: InvoicesResponse<Invoice> })
@@ -135,7 +154,7 @@ export class InvoiceQueryController {
   @ApiQuery({ name: "page", required: false, type: Number })
   @ApiQuery({ name: "size", required: false, type: Number })
   @ApiQuery({ name: "sort", required: false, type: String })
-  @ApiQuery({ name: "order", required: false, type: ()=>Order })
+  @ApiQuery({ name: "order", required: false, type: () => Order })
   @ApiQuery({ name: "search", required: false, type: String })
   @ApiQuery({ name: "initDate", required: false, type: Date })
   @ApiQuery({ name: "endDate", required: false, type: Date })
@@ -159,7 +178,7 @@ export class InvoiceQueryController {
     @Query("endDate") endDate?: Date
   ): Promise<InvoicesResponse<Invoice>> {
     try {
-     const paginationArgs: PaginationArgs = PaginationArgs.createPaginator(
+      const paginationArgs: PaginationArgs = PaginationArgs.createPaginator(
         page || 1,
         size || 25,
         sort || "createdAt", // Asigna valor por defecto
@@ -205,7 +224,7 @@ export class InvoiceQueryController {
   @ApiQuery({ name: "page", required: false, type: Number })
   @ApiQuery({ name: "size", required: false, type: Number })
   @ApiQuery({ name: "sort", required: false, type: String })
-  @ApiQuery({ name: "order", required: false, type: ()=>Order })
+  @ApiQuery({ name: "order", required: false, type: () => Order })
   @ApiQuery({ name: "search", required: false, type: String })
   @ApiQuery({ name: "initDate", required: false, type: Date })
   @ApiQuery({ name: "endDate", required: false, type: Date })
@@ -219,7 +238,7 @@ export class InvoiceQueryController {
       .get(InvoiceQueryService.name),
   })
   async findAndCount(
-    @Query() where: Record<string, any>={},
+    @Query() where: Record<string, any> = {},
     @Query("page") page?: number,
     @Query("size") size?: number,
     @Query("sort") sort?: string,
@@ -269,7 +288,7 @@ export class InvoiceQueryController {
       .get(InvoiceQueryService.name),
   })
   async findOne(
-    @Query() where: Record<string, any>={}
+    @Query() where: Record<string, any> = {}
   ): Promise<InvoiceResponse<Invoice>> {
     try {
       const entity = await this.service.findOne({
@@ -300,7 +319,7 @@ export class InvoiceQueryController {
       .get(InvoiceQueryService.name),
   })
   async findOneOrFail(
-    @Query() where: Record<string, any>={}
+    @Query() where: Record<string, any> = {}
   ): Promise<InvoiceResponse<Invoice> | Error> {
     try {
       const entity = await this.service.findOne({
@@ -317,5 +336,3 @@ export class InvoiceQueryController {
     }
   }
 }
-
-
