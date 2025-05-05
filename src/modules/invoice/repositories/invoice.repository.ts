@@ -1,6 +1,36 @@
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import {
+/*
+ * Copyright (c) 2025 SoftwarEnTalla
+ * Licencia: MIT
+ * Contacto: softwarentalla@gmail.com
+ * CEOs: 
+ *       Persy Morell Guerra      Email: pmorellpersi@gmail.com  Phone : +53-5336-4654 Linkedin: https://www.linkedin.com/in/persy-morell-guerra-288943357/
+ *       Dailyn García Domínguez  Email: dailyngd@gmail.com      Phone : +53-5432-0312 Linkedin: https://www.linkedin.com/in/dailyn-dominguez-3150799b/
+ *
+ * CTO: Persy Morell Guerra
+ * COO: Dailyn García Domínguez and Persy Morell Guerra
+ * CFO: Dailyn García Domínguez and Persy Morell Guerra
+ *
+ * Repositories: 
+ *               https://github.com/SoftwareEnTalla 
+ *
+ *               https://github.com/apokaliptolesamale?tab=repositories
+ *
+ *
+ * Social Networks:
+ *
+ *              https://x.com/SoftwarEnTalla
+ *
+ *              https://www.facebook.com/profile.php?id=61572625716568
+ *
+ *              https://www.instagram.com/softwarentalla/
+ *              
+ *
+ *
+ */
+
+    import { Injectable } from '@nestjs/common';
+  import { InjectRepository } from '@nestjs/typeorm';
+  import {
   FindManyOptions,
   FindOptionsWhere,
   In,
@@ -8,443 +38,456 @@ import {
   Repository,
   DeleteResult,
   UpdateResult,
-} from "typeorm";
+} from 'typeorm';
+ 
+  import { BaseEntity } from '../entities/base.entity';
+  import { Invoice } from '../entities/invoice.entity';
+  import { Cacheable } from '../decorators/cache.decorator';
+  import { generateCacheKey } from 'src/utils/functions';
 
-import { BaseEntity } from "../entities/base.entity";
-import { Invoice } from "../entities/invoice.entity";
-import { Cacheable } from "../decorators/cache.decorator";
-import { generateCacheKey } from "src/utils/functions";
+  //Logger
+import { LogExecutionTime } from 'src/common/logger/loggers.functions';
+import { LoggerClient } from 'src/common/logger/logger.client';
+import { logger } from '@core/logs/logger';
 
-//Logger
-import { LogExecutionTime } from "src/common/logger/loggers.functions";
-import { LoggerClient } from "src/common/logger/logger.client";
-
-@Injectable()
-export class InvoiceRepository {
-  constructor(
-    @InjectRepository(Invoice)
-    private readonly repository: Repository<Invoice>
-  ) {
-    this.validate();
-  }
-
-  @LogExecutionTime({
-    layer: "repository",
-    callback: async (logData, client) => {
-      // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      try {
-        return await client.send(logData);
-      } catch (error) {
-        console.info(
-          "Ha ocurrido un error al enviar la traza de log: ",
-          logData
-        );
-        console.info("ERROR-LOG: ", error);
-        throw error;
-      }
-    },
-    client: new LoggerClient()
-      .registerClient(InvoiceRepository.name)
-      .get(InvoiceRepository.name),
-  })
-  private validate(): void {
-    const entityInstance = Object.create(Invoice.prototype);
-
-    if (!(entityInstance instanceof BaseEntity)) {
-      throw new Error(
-        `El tipo ${Invoice.name} no extiende de BaseEntity. Asegúrate de que todas las entidades hereden correctamente.`
-      );
+  @Injectable()
+  export class InvoiceRepository {
+    constructor(
+      @InjectRepository(Invoice)
+      private readonly repository: Repository<Invoice>
+    ) {
+      this.validate();
     }
-  }
 
-  //Funciones de Query-Repositories
-  @LogExecutionTime({
-    layer: "repository",
+    @LogExecutionTime({
+    layer: 'repository',
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      try {
+      try{
+        logger.info('Información del cliente y datos a enviar:',[logData,client]);
         return await client.send(logData);
-      } catch (error) {
-        console.info(
-          "Ha ocurrido un error al enviar la traza de log: ",
-          logData
-        );
-        console.info("ERROR-LOG: ", error);
+      }
+      catch(error){
+        logger.info('Ha ocurrido un error al enviar la traza de log: ', logData);
+        logger.info('ERROR-LOG: ', error);
         throw error;
       }
     },
-    client: new LoggerClient()
+    client: LoggerClient.getInstance()
       .registerClient(InvoiceRepository.name)
       .get(InvoiceRepository.name),
   })
-  async findAll(options?: FindManyOptions<Invoice>): Promise<Invoice[]> {
-    return this.repository.find(options);
-  }
+    private validate(): void {
+      const entityInstance = Object.create(Invoice.prototype);
 
-  @LogExecutionTime({
-    layer: "repository",
-    callback: async (logData, client) => {
-      // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      try {
-        return await client.send(logData);
-      } catch (error) {
-        console.info(
-          "Ha ocurrido un error al enviar la traza de log: ",
-          logData
+      if (!(entityInstance instanceof BaseEntity)) {
+        throw new Error(
+          `El tipo ${Invoice.name} no extiende de BaseEntity. Asegúrate de que todas las entidades hereden correctamente.`
         );
-        console.info("ERROR-LOG: ", error);
-        throw error;
       }
-    },
-    client: new LoggerClient()
-      .registerClient(InvoiceRepository.name)
-      .get(InvoiceRepository.name),
-  })
-  async findById(id: string): Promise<Invoice | null> {
-    const tmp: FindOptionsWhere<Invoice> = { id } as FindOptionsWhere<Invoice>;
-    return this.repository.findOneBy(tmp);
-  }
-
-  @LogExecutionTime({
-    layer: "repository",
-    callback: async (logData, client) => {
-      // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      try {
-        return await client.send(logData);
-      } catch (error) {
-        console.info(
-          "Ha ocurrido un error al enviar la traza de log: ",
-          logData
-        );
-        console.info("ERROR-LOG: ", error);
-        throw error;
-      }
-    },
-    client: new LoggerClient()
-      .registerClient(InvoiceRepository.name)
-      .get(InvoiceRepository.name),
-  })
-  async findByField(
-    field: string,
-    value: any,
-    page: number,
-    limit: number
-  ): Promise<Invoice[]> {
-    const [entities] = await this.repository.findAndCount({
-      where: { [field]: value },
-      skip: (page - 1) * limit,
-      take: limit,
-    });
-    return entities;
-  }
-
-  @LogExecutionTime({
-    layer: "repository",
-    callback: async (logData, client) => {
-      // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      try {
-        return await client.send(logData);
-      } catch (error) {
-        console.info(
-          "Ha ocurrido un error al enviar la traza de log: ",
-          logData
-        );
-        console.info("ERROR-LOG: ", error);
-        throw error;
-      }
-    },
-    client: new LoggerClient()
-      .registerClient(InvoiceRepository.name)
-      .get(InvoiceRepository.name),
-  })
-  async findWithPagination(
-    options: FindManyOptions<Invoice>,
-    page: number,
-    limit: number
-  ): Promise<Invoice[]> {
-    const skip = (page - 1) * limit;
-    return this.repository.find({ ...options, skip, take: limit });
-  }
-
-  @LogExecutionTime({
-    layer: "repository",
-    callback: async (logData, client) => {
-      // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      try {
-        return await client.send(logData);
-      } catch (error) {
-        console.info(
-          "Ha ocurrido un error al enviar la traza de log: ",
-          logData
-        );
-        console.info("ERROR-LOG: ", error);
-        throw error;
-      }
-    },
-    client: new LoggerClient()
-      .registerClient(InvoiceRepository.name)
-      .get(InvoiceRepository.name),
-  })
-  async count(): Promise<number> {
-    return this.repository.count();
-  }
-
-  @LogExecutionTime({
-    layer: "repository",
-    callback: async (logData, client) => {
-      // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      try {
-        return await client.send(logData);
-      } catch (error) {
-        console.info(
-          "Ha ocurrido un error al enviar la traza de log: ",
-          logData
-        );
-        console.info("ERROR-LOG: ", error);
-        throw error;
-      }
-    },
-    client: new LoggerClient()
-      .registerClient(InvoiceRepository.name)
-      .get(InvoiceRepository.name),
-  })
-  async findAndCount(
-    where?: Record<string, any>
-  ): Promise<[Invoice[], number]> {
-    return this.repository.findAndCount({
-      where: where,
-    });
-  }
-
-  @LogExecutionTime({
-    layer: "repository",
-    callback: async (logData, client) => {
-      // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      try {
-        return await client.send(logData);
-      } catch (error) {
-        console.info(
-          "Ha ocurrido un error al enviar la traza de log: ",
-          logData
-        );
-        console.info("ERROR-LOG: ", error);
-        throw error;
-      }
-    },
-    client: new LoggerClient()
-      .registerClient(InvoiceRepository.name)
-      .get(InvoiceRepository.name),
-  })
-  async findOne(where?: Record<string, any>): Promise<Invoice | null> {
-    return this.repository.findOne({
-      where: where,
-    });
-  }
-
-  @LogExecutionTime({
-    layer: "repository",
-    callback: async (logData, client) => {
-      // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      try {
-        return await client.send(logData);
-      } catch (error) {
-        console.info(
-          "Ha ocurrido un error al enviar la traza de log: ",
-          logData
-        );
-        console.info("ERROR-LOG: ", error);
-        throw error;
-      }
-    },
-    client: new LoggerClient()
-      .registerClient(InvoiceRepository.name)
-      .get(InvoiceRepository.name),
-  })
-  async findOneOrFail(where?: Record<string, any>): Promise<Invoice> {
-    const entity = await this.repository.findOne({
-      where: where,
-    });
-    if (!entity) {
-      throw new Error("Entity not found");
     }
-    return entity;
-  }
 
-  @LogExecutionTime({
-    layer: "repository",
+    
+    //Funciones de Query-Repositories
+    @LogExecutionTime({
+    layer: 'repository',
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      try {
+      try{
+        logger.info('Información del cliente y datos a enviar:',[logData,client]);
         return await client.send(logData);
-      } catch (error) {
-        console.info(
-          "Ha ocurrido un error al enviar la traza de log: ",
-          logData
-        );
-        console.info("ERROR-LOG: ", error);
+      }
+      catch(error){
+        logger.info('Ha ocurrido un error al enviar la traza de log: ', logData);
+        logger.info('ERROR-LOG: ', error);
         throw error;
       }
     },
-    client: new LoggerClient()
+    client: LoggerClient.getInstance()
       .registerClient(InvoiceRepository.name)
       .get(InvoiceRepository.name),
-  })
-  //Funciones de Command-Repositories
-  @Cacheable({
-    key: (args) => generateCacheKey<Invoice>("createInvoice", args[0], args[1]),
-    ttl: 60,
-  })
-  async create(entity: Invoice): Promise<Invoice> {
-    return this.repository.save(entity);
-  }
+    })
+    async findAll(options?: FindManyOptions<Invoice>): Promise<Invoice[]> {
+      logger.info('Ready to findAll Invoice on repository:',options);
+      return this.repository.find(options);
+    }
 
-  @LogExecutionTime({
-    layer: "repository",
+
+    @LogExecutionTime({
+    layer: 'repository',
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      try {
+      try{
+        logger.info('Información del cliente y datos a enviar:',[logData,client]);
         return await client.send(logData);
-      } catch (error) {
-        console.info(
-          "Ha ocurrido un error al enviar la traza de log: ",
-          logData
-        );
-        console.info("ERROR-LOG: ", error);
+      }
+      catch(error){
+        logger.info('Ha ocurrido un error al enviar la traza de log: ', logData);
+        logger.info('ERROR-LOG: ', error);
         throw error;
       }
     },
-    client: new LoggerClient()
+    client: LoggerClient.getInstance()
       .registerClient(InvoiceRepository.name)
       .get(InvoiceRepository.name),
-  })
-  @Cacheable({
-    key: (args) =>
-      generateCacheKey<Invoice[]>("createInvoices", args[0], args[1]),
-    ttl: 60,
-  })
-  async bulkCreate(entities: Invoice[]): Promise<Invoice[]> {
-    return this.repository.save(entities);
-  }
+    })
+    async findById(id: string): Promise<Invoice | null> {
+      const tmp: FindOptionsWhere<Invoice> = { id } as FindOptionsWhere<Invoice>;
+      logger.info('Ready to findById Invoice on repository:',tmp);
+      return this.repository.findOneBy(tmp);
+    }
 
-  @LogExecutionTime({
-    layer: "repository",
+
+    @LogExecutionTime({
+    layer: 'repository',
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      try {
+      try{
+        logger.info('Información del cliente y datos a enviar:',[logData,client]);
         return await client.send(logData);
-      } catch (error) {
-        console.info(
-          "Ha ocurrido un error al enviar la traza de log: ",
-          logData
-        );
-        console.info("ERROR-LOG: ", error);
+      }
+      catch(error){
+        logger.info('Ha ocurrido un error al enviar la traza de log: ', logData);
+        logger.info('ERROR-LOG: ', error);
         throw error;
       }
     },
-    client: new LoggerClient()
+    client: LoggerClient.getInstance()
       .registerClient(InvoiceRepository.name)
       .get(InvoiceRepository.name),
-  })
-  @Cacheable({
-    key: (args) => generateCacheKey<Invoice>("updateInvoice", args[0], args[1]),
-    ttl: 60,
-  })
-  async update(
-    id: string,
-    partialEntity: Partial<Invoice>
-  ): Promise<Invoice | null> {
-    let result: UpdateResult = await this.repository.update(id, partialEntity);
-    return this.repository.findOneBy({ id: id });
-  }
+    })
+    async findByField(
+      field: string,
+      value: any,
+      page: number,
+      limit: number
+    ): Promise<Invoice[]> {
+      let options={
+        where: { [field]: value },
+        skip: (page - 1) * limit,
+        take: limit,
+      };
+      logger.info('Ready to findByField Invoice on repository:',options);
+      const [entities] = await this.repository.findAndCount(options);
+      return entities;
+    }
 
-  @LogExecutionTime({
-    layer: "repository",
+
+    @LogExecutionTime({
+    layer: 'repository',
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      try {
+      try{
+        logger.info('Información del cliente y datos a enviar:',[logData,client]);
         return await client.send(logData);
-      } catch (error) {
-        console.info(
-          "Ha ocurrido un error al enviar la traza de log: ",
-          logData
-        );
-        console.info("ERROR-LOG: ", error);
+      }
+      catch(error){
+        logger.info('Ha ocurrido un error al enviar la traza de log: ', logData);
+        logger.info('ERROR-LOG: ', error);
         throw error;
       }
     },
-    client: new LoggerClient()
+    client: LoggerClient.getInstance()
       .registerClient(InvoiceRepository.name)
       .get(InvoiceRepository.name),
-  })
-  @Cacheable({
-    key: (args) =>
-      generateCacheKey<Invoice[]>("updateInvoices", args[0], args[1]),
-    ttl: 60,
-  })
-  async bulkUpdate(entities: Partial<Invoice>[]): Promise<Invoice[]> {
-    const updatedEntities: Invoice[] = [];
-    for (const entity of entities) {
-      if (entity.id) {
-        const updatedEntity = await this.update(entity.id, entity);
-        if (updatedEntity) {
-          updatedEntities.push(updatedEntity);
+    })
+    async findWithPagination(
+      options: FindManyOptions<Invoice>,
+      page: number,
+      limit: number
+    ): Promise<Invoice[]> {
+      const skip = (page - 1) * limit;
+      options={ ...options, skip, take: limit };
+      logger.info('Ready to findByField Invoice on repository:',options);
+      return this.repository.find(options);
+    }
+
+    @LogExecutionTime({
+    layer: 'repository',
+    callback: async (logData, client) => {
+      // Puedes usar el cliente proporcionado o ignorarlo y usar otro
+      try{
+        logger.info('Información del cliente y datos a enviar:',[logData,client]);
+        return await client.send(logData);
+      }
+      catch(error){
+        logger.info('Ha ocurrido un error al enviar la traza de log: ', logData);
+        logger.info('ERROR-LOG: ', error);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(InvoiceRepository.name)
+      .get(InvoiceRepository.name),
+    })
+    async count(): Promise<number> {
+      logger.info('Ready to count Invoice on repository...');
+      let result= this.repository.count();
+      logger.info('Was counted  instances of Invoice on repository:');
+      return result;
+    }
+
+
+
+    @LogExecutionTime({
+    layer: 'repository',
+    callback: async (logData, client) => {
+      // Puedes usar el cliente proporcionado o ignorarlo y usar otro
+      try{
+        logger.info('Información del cliente y datos a enviar:',[logData,client]);
+        return await client.send(logData);
+      }
+      catch(error){
+        logger.info('Ha ocurrido un error al enviar la traza de log: ', logData);
+        logger.info('ERROR-LOG: ', error);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(InvoiceRepository.name)
+      .get(InvoiceRepository.name),
+    })
+    async findAndCount(where?: Record<string, any>): Promise<[Invoice[], number]> {
+      logger.info('Ready to findByField Invoice on repository:',where);
+      let result = await this.repository.findAndCount(where);
+      return result;
+    }
+
+
+    @LogExecutionTime({
+    layer: 'repository',
+    callback: async (logData, client) => {
+      // Puedes usar el cliente proporcionado o ignorarlo y usar otro
+      try{
+        logger.info('Información del cliente y datos a enviar:',[logData,client]);
+        return await client.send(logData);
+      }
+      catch(error){
+        logger.info('Ha ocurrido un error al enviar la traza de log: ', logData);
+        logger.info('ERROR-LOG: ', error);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(InvoiceRepository.name)
+      .get(InvoiceRepository.name),
+    })
+    async findOne(where?: Record<string, any>): Promise<Invoice | null> {
+      const tmp: FindOptionsWhere<Invoice> = where as FindOptionsWhere<Invoice>;
+      logger.info('Ready to findOneBy Invoice on repository with conditions:', tmp);
+      // Si 'where' es undefined o null, puedes manejarlo según tu lógica
+      if (!where) {
+        logger.warn('No conditions provided for finding Invoice.');
+        return null; // O maneja el caso como prefieras
+      }
+      logger.info('Ready to findOneBy Invoice on repository:',tmp);
+      return this.repository.findOneBy(tmp);
+    }
+
+
+    @LogExecutionTime({
+    layer: 'repository',
+    callback: async (logData, client) => {
+      // Puedes usar el cliente proporcionado o ignorarlo y usar otro
+      try{
+        logger.info('Información del cliente y datos a enviar:',[logData,client]);
+        return await client.send(logData);
+      }
+      catch(error){
+        logger.info('Ha ocurrido un error al enviar la traza de log: ', logData);
+        logger.info('ERROR-LOG: ', error);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(InvoiceRepository.name)
+      .get(InvoiceRepository.name),
+    })
+    async findOneOrFail(where?: Record<string, any>): Promise<Invoice> {
+      logger.info('Ready to findOneOrFail Invoice on repository:',where);
+      const entity = await this.repository.findOne({
+        where: where,
+      });
+      if (!entity) {
+        throw new Error('Entity not found');
+      }
+      return entity;
+    }
+
+
+    @LogExecutionTime({
+    layer: 'repository',
+    callback: async (logData, client) => {
+      // Puedes usar el cliente proporcionado o ignorarlo y usar otro
+      try{
+        logger.info('Información del cliente y datos a enviar:',[logData,client]);
+        return await client.send(logData);
+      }
+      catch(error){
+        logger.info('Ha ocurrido un error al enviar la traza de log: ', logData);
+        logger.info('ERROR-LOG: ', error);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(InvoiceRepository.name)
+      .get(InvoiceRepository.name),
+    })
+    //Funciones de Command-Repositories
+    @Cacheable({ key: (args) => generateCacheKey<Invoice>('createInvoice',args[0], args[1]), ttl: 60 })
+    async create(entity: Invoice): Promise<Invoice> {
+        logger.info('Ready to create Invoice on repository:', entity);
+        const result = await this.repository.save(entity);
+        logger.info('New instance of Invoice was created with id:'+ result.id+' on repository:', result);         
+        return result;
+    }
+
+
+    @LogExecutionTime({
+    layer: 'repository',
+    callback: async (logData, client) => {
+      // Puedes usar el cliente proporcionado o ignorarlo y usar otro
+      try{
+        logger.info('Información del cliente y datos a enviar:',[logData,client]);
+        return await client.send(logData);
+      }
+      catch(error){
+        logger.info('Ha ocurrido un error al enviar la traza de log: ', logData);
+        logger.info('ERROR-LOG: ', error);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(InvoiceRepository.name)
+      .get(InvoiceRepository.name),
+    })
+    @Cacheable({ key: (args) => generateCacheKey<Invoice[]>('createInvoices',args[0], args[1]), ttl: 60 })
+    async bulkCreate(entities: Invoice[]): Promise<Invoice[]> {
+      logger.info('Ready to create Invoice on repository:', entities);
+      const result = await this.repository.save(entities);
+      logger.info('New '+entities.length+' instances of Invoice was created on repository:', result);      
+      return result;
+    }
+
+
+
+    @LogExecutionTime({
+    layer: 'repository',
+    callback: async (logData, client) => {
+      // Puedes usar el cliente proporcionado o ignorarlo y usar otro
+      try{
+        logger.info('Información del cliente y datos a enviar:',[logData,client]);
+        return await client.send(logData);
+      }
+      catch(error){
+        logger.info('Ha ocurrido un error al enviar la traza de log: ', logData);
+        logger.info('ERROR-LOG: ', error);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(InvoiceRepository.name)
+      .get(InvoiceRepository.name),
+    })
+    @Cacheable({ key: (args) => generateCacheKey<Invoice>('updateInvoice',args[0], args[1]), ttl: 60 })
+    async update(
+        id: string,
+        partialEntity: Partial<Invoice>
+      ): Promise<Invoice | null> {
+        logger.info('Ready to update Invoice on repository:', partialEntity);
+        let result = await this.repository.update(id, partialEntity);
+        logger.info('update Invoice on repository was successfully :', partialEntity);
+        let instance=await this.repository.findOneBy({ id: id });
+        logger.info('Updated instance of Invoice with id:  was finded on repository:', instance);
+        return this.repository.findOneBy({ id: id });
+    }
+
+
+    @LogExecutionTime({
+    layer: 'repository',
+    callback: async (logData, client) => {
+      // Puedes usar el cliente proporcionado o ignorarlo y usar otro
+      try{
+        logger.info('Información del cliente y datos a enviar:',[logData,client]);
+        return await client.send(logData);
+      }
+      catch(error){
+        logger.info('Ha ocurrido un error al enviar la traza de log: ', logData);
+        logger.info('ERROR-LOG: ', error);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(InvoiceRepository.name)
+      .get(InvoiceRepository.name),
+    })
+    @Cacheable({ key: (args) => generateCacheKey<Invoice[]>('updateInvoices',args[0], args[1]), ttl: 60 })
+    async bulkUpdate(entities: Partial<Invoice>[]): Promise<Invoice[]> {
+        const updatedEntities: Invoice[] = [];
+        logger.info('Ready to update '+entities.length+' entities on repository:', entities);
+        for (const entity of entities) {
+          if (entity.id) {
+            const updatedEntity = await this.update(entity.id, entity);
+            if (updatedEntity) {
+              updatedEntities.push(updatedEntity);
+            }
+          }
         }
-      }
+        logger.info('Already updated '+updatedEntities.length+' entities on repository:', updatedEntities);
+        return updatedEntities;
     }
-    return updatedEntities;
-  }
 
-  @LogExecutionTime({
-    layer: "repository",
+
+    @LogExecutionTime({
+    layer: 'repository',
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      try {
+      try{
+        logger.info('Información del cliente y datos a enviar:',[logData,client]);
         return await client.send(logData);
-      } catch (error) {
-        console.info(
-          "Ha ocurrido un error al enviar la traza de log: ",
-          logData
-        );
-        console.info("ERROR-LOG: ", error);
+      }
+      catch(error){
+        logger.info('Ha ocurrido un error al enviar la traza de log: ', logData);
+        logger.info('ERROR-LOG: ', error);
         throw error;
       }
     },
-    client: new LoggerClient()
+    client: LoggerClient.getInstance()
       .registerClient(InvoiceRepository.name)
       .get(InvoiceRepository.name),
-  })
-  @Cacheable({
-    key: (args) => generateCacheKey<string>("deleteInvoice", args[0]),
-    ttl: 60,
-  })
-  async delete(id: string): Promise<DeleteResult> {
-    return await this.repository.delete({ id });
-  }
+    })
+    @Cacheable({ key: (args) => generateCacheKey<string>('deleteInvoice',args[0]), ttl: 60 })
+    async delete(id: string): Promise<DeleteResult> {
+        logger.info('Ready to delete  entity with id:  on repository:', id);
+        const result = await this.repository.delete({ id });
+        logger.info('Entity deleted with id:  on repository:', result);
+        return result;
+    }
 
-  @LogExecutionTime({
-    layer: "repository",
+    @LogExecutionTime({
+    layer: 'repository',
     callback: async (logData, client) => {
       // Puedes usar el cliente proporcionado o ignorarlo y usar otro
-      try {
+      try{
+        logger.info('Información del cliente y datos a enviar:',[logData,client]);
         return await client.send(logData);
-      } catch (error) {
-        console.info(
-          "Ha ocurrido un error al enviar la traza de log: ",
-          logData
-        );
-        console.info("ERROR-LOG: ", error);
+      }
+      catch(error){
+        logger.info('Ha ocurrido un error al enviar la traza de log: ', logData);
+        logger.info('ERROR-LOG: ', error);
         throw error;
       }
     },
-    client: new LoggerClient()
+    client: LoggerClient.getInstance()
       .registerClient(InvoiceRepository.name)
       .get(InvoiceRepository.name),
-  })
-  @Cacheable({
-    key: (args) => generateCacheKey<string[]>("deleteInvoices", args[0]),
-    ttl: 60,
-  })
-  async bulkDelete(ids: string[]): Promise<DeleteResult> {
-    return await this.repository.delete(ids);
+    })
+    @Cacheable({ key: (args) => generateCacheKey<string[]>('deleteInvoices',args[0]), ttl: 60 })
+    async bulkDelete(ids: string[]): Promise<DeleteResult> {
+        logger.info('Ready to delete '+ids.length+' entities on repository:', ids);
+        const result = await this.repository.delete(ids);
+        logger.info('Already deleted '+ids.length+' entities on repository:', result);
+        return result;
+    }
   }
-}
+  
