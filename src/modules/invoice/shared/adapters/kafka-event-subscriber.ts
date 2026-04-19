@@ -33,6 +33,11 @@ import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { IEventBus } from '@nestjs/cqrs';
 import { KafkaService } from '../messaging/kafka.service';
 
+//Logger - Codetrace
+import { LogExecutionTime } from 'src/common/logger/loggers.functions';
+import { LoggerClient } from 'src/common/logger/logger.client';
+import { logger } from '@core/logs/logger';
+
 @Injectable()
 export class KafkaEventSubscriber implements OnModuleInit {
   private readonly logger = new Logger(KafkaEventSubscriber.name);

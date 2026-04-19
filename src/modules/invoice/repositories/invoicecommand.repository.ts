@@ -55,7 +55,7 @@ import { InvoiceUpdatedEvent } from '../events/invoiceupdated.event';
 import { InvoiceDeletedEvent } from '../events/invoicedeleted.event';
 
 //Enfoque Event Sourcing
-import { CommandBus } from '@nestjs/cqrs';
+import { CommandBus, EventBus } from '@nestjs/cqrs';
 import { EventStoreService } from '../shared/event-store/event-store.service';
 import { KafkaEventPublisher } from '../shared/adapters/kafka-event-publisher';
 import { BaseEvent } from '../events/base.event';
@@ -71,7 +71,8 @@ export class InvoiceCommandRepository implements IEventHandler<BaseEvent>{
     private readonly invoiceRepository: InvoiceQueryRepository,
     private readonly commandBus: CommandBus,
     private readonly eventStore: EventStoreService,
-    private readonly eventPublisher: KafkaEventPublisher
+    private readonly eventPublisher: KafkaEventPublisher,
+    private readonly eventBus: EventBus
   ) {
     this.validate();
   }
@@ -262,13 +263,15 @@ export class InvoiceCommandRepository implements IEventHandler<BaseEvent>{
     logger.info('Ready to create Invoice on repository:', entity);
     const result = await this.repository.save(entity);
     logger.info('New instance of Invoice was created with id:'+ result.id+' on repository:', result);
-    this.eventPublisher.publish(new InvoiceCreatedEvent(result.id, {
+    const __dualEvt1 = new InvoiceCreatedEvent(result.id, {
       instance: result,
       metadata: {
         initiatedBy: result.creator,
         correlationId: result.id,
       },
-    }));
+    });
+    this.eventBus.publish(__dualEvt1);
+    this.eventPublisher.publish(__dualEvt1);
     return result;
   }
 
@@ -296,13 +299,15 @@ export class InvoiceCommandRepository implements IEventHandler<BaseEvent>{
     logger.info('Ready to create Invoice on repository:', entities);
     const result = await this.repository.save(entities);
     logger.info('New '+entities.length+' instances of Invoice was created on repository:', result);
-    this.eventPublisher.publishAll(result.map((el)=>new InvoiceCreatedEvent(el.id, {
+    const __dualEvts2 = result.map((el)=>new InvoiceCreatedEvent(el.id, {
       instance: el,
       metadata: {
         initiatedBy: el.creator,
         correlationId: el.id,
       },
-    })));
+    }));
+    __dualEvts2.forEach((ev: any) => this.eventBus.publish(ev));
+    this.eventPublisher.publishAll(__dualEvts2);
     return result;
   }
 
@@ -337,13 +342,15 @@ export class InvoiceCommandRepository implements IEventHandler<BaseEvent>{
     logger.info('Updated instance of Invoice with id:  was finded on repository:', instance);
     if(instance){
      logger.info('Ready to publish or fire event InvoiceUpdatedEvent on repository:', instance);
-     this.eventPublisher.publish(new InvoiceUpdatedEvent(instance.id, {
+     const __dualEvt3 = new InvoiceUpdatedEvent(instance.id, {
           instance: instance,
           metadata: {
             initiatedBy: instance.createdBy || 'system',
             correlationId: id,
           },
-        }));
+        });
+     this.eventBus.publish(__dualEvt3);
+     this.eventPublisher.publish(__dualEvt3);
     }   
     return instance;
   }
@@ -376,13 +383,15 @@ export class InvoiceCommandRepository implements IEventHandler<BaseEvent>{
         const updatedEntity = await this.update(entity.id, entity);
         if (updatedEntity) {
           updatedEntities.push(updatedEntity);
-          this.eventPublisher.publish(new InvoiceUpdatedEvent(updatedEntity.id, {
+          const __dualEvt4 = new InvoiceUpdatedEvent(updatedEntity.id, {
               instance: updatedEntity,
               metadata: {
                 initiatedBy: updatedEntity.createdBy || 'system',
                 correlationId: entity.id,
               },
-            }));
+            });
+          this.eventBus.publish(__dualEvt4);
+          this.eventPublisher.publish(__dualEvt4);
         }
       }
     }
@@ -419,13 +428,15 @@ export class InvoiceCommandRepository implements IEventHandler<BaseEvent>{
      const result = await this.repository.delete({ id });
      logger.info('Entity deleted with id:  on repository:', result);
      logger.info('Ready to publish/fire InvoiceDeletedEvent on repository:', result);
-     this.eventPublisher.publish(new InvoiceDeletedEvent(id, {
+     const __dualEvt5 = new InvoiceDeletedEvent(id, {
       instance: entity,
       metadata: {
         initiatedBy: entity.createdBy || 'system',
         correlationId: entity.id,
       },
-    }));
+    });
+     this.eventBus.publish(__dualEvt5);
+     this.eventPublisher.publish(__dualEvt5);
      return result;
   }
 
@@ -454,7 +465,7 @@ export class InvoiceCommandRepository implements IEventHandler<BaseEvent>{
     const result = await this.repository.delete(ids);
     logger.info('Already deleted '+ids.length+' entities on repository:', result);
     logger.info('Ready to publish/fire InvoiceDeletedEvent on repository:', result);
-    this.eventPublisher.publishAll(ids.map(async (id) => {
+    const __dualEvts6 = await Promise.all(ids.map(async (id) => {
         const entity = await this.invoiceRepository.findOne({ id });
         if(!entity){
           throw new NotFoundException(`No se encontro el id: ${id}`);
@@ -467,6 +478,8 @@ export class InvoiceCommandRepository implements IEventHandler<BaseEvent>{
           },
         });
       }));
+    __dualEvts6.forEach((ev: any) => this.eventBus.publish(ev));
+    this.eventPublisher.publishAll(__dualEvts6);
     return result;
   }
 }

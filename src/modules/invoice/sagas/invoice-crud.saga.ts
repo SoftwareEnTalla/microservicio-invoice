@@ -46,6 +46,11 @@ import {
   DeleteInvoiceCommand
 } from '../commands/exporting.command';
 
+//Logger - Codetrace
+import { LogExecutionTime } from 'src/common/logger/loggers.functions';
+import { LoggerClient } from 'src/common/logger/logger.client';
+import { logger } from '@core/logs/logger';
+
 @Injectable()
 export class InvoiceCrudSaga {
   private readonly logger = new Logger(InvoiceCrudSaga.name);
@@ -62,8 +67,9 @@ export class InvoiceCrudSaga {
       ofType(InvoiceCreatedEvent),
       tap(event => {
         this.logger.log(`Saga iniciada para creación de Invoice: ${event.aggregateId}`);
-        // Lógica post-creación (ej: enviar notificación)
+        void this.handleInvoiceCreated(event);
       }),
+      map(() => null),
       map(event => {
         // Ejecutar comandos adicionales si es necesario
         return null;
@@ -78,8 +84,9 @@ export class InvoiceCrudSaga {
       ofType(InvoiceUpdatedEvent),
       tap(event => {
         this.logger.log(`Saga iniciada para actualización de Invoice: ${event.aggregateId}`);
-        // Lógica post-actualización (ej: actualizar caché)
-      })
+        void this.handleInvoiceUpdated(event);
+      }),
+      map(() => null)
     );
   };
 
@@ -90,8 +97,9 @@ export class InvoiceCrudSaga {
       ofType(InvoiceDeletedEvent),
       tap(event => {
         this.logger.log(`Saga iniciada para eliminación de Invoice: ${event.aggregateId}`);
-        // Lógica post-eliminación (ej: limpiar relaciones)
+        void this.handleInvoiceDeleted(event);
       }),
+      map(() => null),
       map(event => {
         // Ejemplo: Ejecutar comando de compensación
         // return this.commandBus.execute(new CompensateDeleteCommand(...));
@@ -99,6 +107,78 @@ export class InvoiceCrudSaga {
       })
     );
   };
+
+
+  @LogExecutionTime({
+    layer: 'saga',
+    callback: async (logData, client) => {
+      try {
+        logger.info('Codetrace saga event:', [logData, client]);
+        return await client.send(logData);
+      } catch (error) {
+        logger.info('Error enviando traza de saga:', logData);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(InvoiceCrudSaga.name)
+      .get(InvoiceCrudSaga.name),
+  })
+  private async handleInvoiceCreated(event: InvoiceCreatedEvent): Promise<void> {
+    try {
+      this.logger.log(`Saga Invoice Created completada: ${event.aggregateId}`);
+    } catch (error: any) {
+      this.handleSagaError(error, event);
+    }
+  }
+
+
+  @LogExecutionTime({
+    layer: 'saga',
+    callback: async (logData, client) => {
+      try {
+        logger.info('Codetrace saga event:', [logData, client]);
+        return await client.send(logData);
+      } catch (error) {
+        logger.info('Error enviando traza de saga:', logData);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(InvoiceCrudSaga.name)
+      .get(InvoiceCrudSaga.name),
+  })
+  private async handleInvoiceUpdated(event: InvoiceUpdatedEvent): Promise<void> {
+    try {
+      this.logger.log(`Saga Invoice Updated completada: ${event.aggregateId}`);
+    } catch (error: any) {
+      this.handleSagaError(error, event);
+    }
+  }
+
+
+  @LogExecutionTime({
+    layer: 'saga',
+    callback: async (logData, client) => {
+      try {
+        logger.info('Codetrace saga event:', [logData, client]);
+        return await client.send(logData);
+      } catch (error) {
+        logger.info('Error enviando traza de saga:', logData);
+        throw error;
+      }
+    },
+    client: LoggerClient.getInstance()
+      .registerClient(InvoiceCrudSaga.name)
+      .get(InvoiceCrudSaga.name),
+  })
+  private async handleInvoiceDeleted(event: InvoiceDeletedEvent): Promise<void> {
+    try {
+      this.logger.log(`Saga Invoice Deleted completada: ${event.aggregateId}`);
+    } catch (error: any) {
+      this.handleSagaError(error, event);
+    }
+  }
 
   // Método para manejo de errores en sagas
   private handleSagaError(error: Error, event: any) {
