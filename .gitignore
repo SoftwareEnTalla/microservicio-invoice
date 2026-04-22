@@ -48,6 +48,23 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+__pycache__/
+*.pyc
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
+
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
+.env
+.env.local
+
+# Temporary build artifacts
+.dcfix-*/
+.local-remotes/
+
+# Codegen checksums manifest (auto-generated)
+.codegen-checksums
