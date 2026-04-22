@@ -1,6 +1,6 @@
 # INVOICE Microservice
 
-**Creation Date**: 2025-05-05
+**Creation Date**: 2026-04-21
 
 **Author**: Ing. Persy Morell Guerra e Ing. Dailyn García Dominguez (SoftwarEnTalla CEO)
 
@@ -24,6 +24,7 @@
 | |____logs
 | |____services
 | |____tda
+|____database
 |____errors
 |____filters
 |____i18n
@@ -51,6 +52,7 @@
 | | |____services
 | | |____shared
 | | | |____adapters
+| | | |____decorators
 | | | |____event-store
 | | | |____messaging
 | | |____types
