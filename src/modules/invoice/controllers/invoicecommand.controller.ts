@@ -206,11 +206,17 @@ export class InvoiceCommandController {
   ): Promise<InvoiceResponse<Invoice>> {
     try {
       // ✅ Validación de coincidencia de IDs
-      if (id !== partialEntity.id) {
+      if (partialEntity?.id && id !== partialEntity.id) {
+
         throw new BadRequestException(
+
           "El ID en la URL no coincide con el ID en la instancia de Invoice a actualizar."
+
         );
+
       }
+
+      if (partialEntity && !partialEntity.id) { partialEntity.id = id; }
       const entity = await this.service.update(id, partialEntity);
 
       if (!entity) {

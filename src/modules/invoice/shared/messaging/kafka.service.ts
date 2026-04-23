@@ -94,16 +94,30 @@ export class KafkaService implements OnModuleDestroy {
       return this.adminClient;
     }
   }
-  async sendMessage(topic: string, message: any) {
+  async sendMessage(
+    topic: string,
+    message: any,
+    options?: { key?: string; headers?: Record<string, any> }
+  ) {
+    const baseHeaders: Record<string, any> = {
+      "event-type": message?.constructor?.name || "unknown",
+      timestamp: new Date().toISOString(),
+    };
+    const mergedHeaders = { ...baseHeaders, ...(options?.headers || {}) };
+    // Kafka headers must be string | Buffer; coerce non-undefined values to string
+    const finalHeaders: Record<string, string> = {};
+    for (const k of Object.keys(mergedHeaders)) {
+      const v = mergedHeaders[k];
+      if (v === undefined || v === null) continue;
+      finalHeaders[k] = typeof v === "string" ? v : String(v);
+    }
     await this.producer.send({
       topic,
       messages: [
         {
+          ...(options?.key ? { key: options.key } : {}),
           value: JSON.stringify(message),
-          headers: {
-            "event-type": message.constructor?.name || "unknown",
-            timestamp: new Date().toISOString(),
-          },
+          headers: finalHeaders,
         },
       ],
     });

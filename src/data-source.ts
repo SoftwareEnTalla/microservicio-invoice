@@ -142,10 +142,10 @@ async function checkPostgreSQLExtensions() {
         [ext]
       );
       if (res.rows.length === 0) {
-        logger.warn(`⚠️ Extensión '' no disponible`);
+        logger.warn("⚠️ Extensión '" + ext + "' no disponible");
       } else {
-        logger.log(`✅ Extensión '' instalada`);
-        await invoice.query(`CREATE EXTENSION IF NOT EXISTS ""`);
+        logger.log("✅ Extensión '" + ext + "' instalada");
+        await invoice.query('CREATE EXTENSION IF NOT EXISTS \"' + ext + '\"');
       }
     }
   } finally {

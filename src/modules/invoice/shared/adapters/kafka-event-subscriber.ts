@@ -93,5 +93,15 @@ export class KafkaEventSubscriber implements OnModuleInit {
 
     return eventMap[eventType];
   }
+
+  /**
+   * Re-suscribe a los topics registrados para disparar un replay de proyecciones.
+   * Esta implementación por defecto re-ejecuta setupSubscriptions para volver
+   * a procesar eventos desde el offset configurado en el consumer group.
+   */
+  async replayRegisteredEvents(): Promise<void> {
+    this.logger.warn('Replay de eventos registrados iniciado.');
+    await this.setupSubscriptions();
+  }
 }
 

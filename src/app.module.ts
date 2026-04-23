@@ -60,6 +60,8 @@ import { HeaderResolver, AcceptLanguageResolver } from "nestjs-i18n";
 import { TranslocoWrapperService } from "./core/services/transloco-wrapper.service";
 import { TranslocoModule } from "@ngneat/transloco";
 import LoggerService, { logger } from "@core/logs/logger";
+import { AuthInvoiceModule } from "./modules/invoice/modules/auth.module";
+import { KafkaModule } from "./modules/invoice/modules/kafka.module";
 
 */
 
@@ -109,6 +111,8 @@ import LoggerService, { logger } from "@core/logs/logger";
     /**
      * Módulo Logger de la aplicación
      */
+        AuthInvoiceModule,
+    KafkaModule,
     LoggingModule,
 
     // Módulo GraphQLModule para Invoice
