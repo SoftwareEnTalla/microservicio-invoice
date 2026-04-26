@@ -29,8 +29,8 @@
  */
 
 
-import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
-import { IEventBus } from '@nestjs/cqrs';
+import { Injectable, OnModuleInit, Logger, Optional } from '@nestjs/common';
+import { EventBus } from '@nestjs/cqrs';
 import { KafkaService } from '../messaging/kafka.service';
 
 //Logger - Codetrace
@@ -42,10 +42,11 @@ import { logger } from '@core/logs/logger';
 export class KafkaEventSubscriber implements OnModuleInit {
   private readonly logger = new Logger(KafkaEventSubscriber.name);
 
+  private readonly eventNames: string[] = [];
+
   constructor(
     private readonly kafkaService: KafkaService,
-    private readonly eventBus: IEventBus,
-    private readonly eventNames: string[] = []
+    private readonly eventBus: EventBus,
   ) {}
 
   async onModuleInit() {
@@ -54,6 +55,7 @@ export class KafkaEventSubscriber implements OnModuleInit {
   }
 
   private async setupSubscriptions() {
+    if (!this.eventNames || this.eventNames.length === 0) { this.logger.log("No event subscriptions configured; skipping."); return; }
     // Suscribe los eventos de otros microservicios
     await this.kafkaService.subscribe(this.eventNames, (message) => {
       this.routeExternalEvent(message);

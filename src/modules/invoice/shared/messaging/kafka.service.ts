@@ -40,20 +40,25 @@ export class KafkaService implements OnModuleDestroy {
   private kafka: Kafka;
   private producer: Producer;
   private consumer: Consumer;
+  private connected: boolean = false;
 
   private adminClient: Admin | null = null;
 
   constructor() {
     this.kafka = new Kafka({
-      brokers: ["kafka:9092"],
+      brokers: ((process.env.KAFKA_BROKERS || "kafka:9092").split(",").map(b => b.trim()).filter(Boolean)),
     });
     this.producer = this.kafka.producer();
-    this.consumer = this.kafka.consumer({ groupId: "nestjs-group" });
+    this.consumer = this.kafka.consumer({ groupId: process.env.KAFKA_GROUP_ID || "nestjs-group" });
     this.adminClient = this.kafka.admin();
   }
 
   async connect() {
+    if (this.connected) {
+      return;
+    }
     await Promise.all([this.producer.connect(), this.consumer.connect()]);
+    this.connected = true;
   }
 
   private async isAdminConnected(): Promise<boolean> {
@@ -99,6 +104,7 @@ export class KafkaService implements OnModuleDestroy {
     message: any,
     options?: { key?: string; headers?: Record<string, any> }
   ) {
+    await this.connect();
     const baseHeaders: Record<string, any> = {
       "event-type": message?.constructor?.name || "unknown",
       timestamp: new Date().toISOString(),
@@ -127,6 +133,7 @@ export class KafkaService implements OnModuleDestroy {
     topic: string | string[],
     callback: KafkaMessageCallback<T>
   ): Promise<void> {
+    await this.connect();
     await this.consumer.subscribe({
       topics: Array.isArray(topic) ? topic : [topic],
     });
@@ -158,6 +165,7 @@ export class KafkaService implements OnModuleDestroy {
 
   async disconnect() {
     await Promise.all([this.producer.disconnect(), this.consumer.disconnect()]);
+    this.connected = false;
   }
 }
 

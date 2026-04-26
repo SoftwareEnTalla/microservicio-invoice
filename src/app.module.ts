@@ -60,13 +60,20 @@ import { HeaderResolver, AcceptLanguageResolver } from "nestjs-i18n";
 import { TranslocoWrapperService } from "./core/services/transloco-wrapper.service";
 import { TranslocoModule } from "@ngneat/transloco";
 import LoggerService, { logger } from "@core/logs/logger";
-import { AuthInvoiceModule } from "./modules/invoice/modules/auth.module";
-import { KafkaModule } from "./modules/invoice/modules/kafka.module";
+
+
 
 */
 
+import { AuthInvoiceModule } from "./modules/invoice/modules/auth.module";
+import { KafkaModule as KafkaInvoiceModule } from "./modules/invoice/modules/kafka.module";
+import { HorizontalModule } from "@common/horizontal";
+import { CatalogClientModule } from "./modules/catalog-client/catalog-client.module";
+
 @Module({
   imports: [
+    HorizontalModule,
+    CatalogClientModule,
     // Se importa/registra el módulo de caché
     CacheModule.register(),
 
@@ -112,19 +119,22 @@ import { KafkaModule } from "./modules/invoice/modules/kafka.module";
      * Módulo Logger de la aplicación
      */
         AuthInvoiceModule,
-    KafkaModule,
+    KafkaInvoiceModule,
     LoggingModule,
 
     // Módulo GraphQLModule para Invoice
-    GraphQLModule.forRoot<ApolloDriverConfig>({
-      driver: ApolloDriver,
-      //autoSchemaFile: "schema.gql", // Opcional: genera un archivo de esquema
-      autoSchemaFile: true,
-      buildSchemaOptions: {
-        dateScalarMode: "timestamp",
-      },
-      // resolvers: { JSON: GraphQLJSON }, // Añade esta línea
-    }),
+    ...(process.env.GRAPHQL_ENABLED === 'true'
+      ? [
+          GraphQLModule.forRoot<ApolloDriverConfig>({
+            driver: ApolloDriver,
+            autoSchemaFile: true,
+            buildSchemaOptions: {
+              dateScalarMode: "timestamp",
+            },
+            // resolvers: { JSON: GraphQLJSON }, // Añade esta línea
+          }),
+        ]
+      : []),
   ],
 
   /**

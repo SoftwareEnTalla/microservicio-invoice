@@ -30,6 +30,8 @@
 
 
 import { DataSource } from "typeorm";
+import { promises as fs } from "fs";
+import { createHash } from "crypto";
 import * as dotenv from "dotenv";
 import { Pool, PoolConfig } from "pg";
 import path from "path";
@@ -46,8 +48,8 @@ export const AppDataSource = new DataSource({
   name: "invoice-service",
   host: process.env.DB_HOST || "localhost",
   port: Number(process.env.DB_PORT) || 5432,
-  username: process.env.DB_USER || "entalla",
-  password: process.env.DB_PASS || "entalla",
+  username: process.env.DB_USERNAME || "entalla",
+  password: process.env.DB_PASSWORD || "entalla",
   database: process.env.DB_NAME || "entalla",
   synchronize: process.env.NODE_ENV !== "production",
   logging: process.env.NODE_ENV !== "production",
@@ -69,9 +71,9 @@ export async function createDatabaseIfNotExists(
   owner: string = "postgres"
 ) {
   const adminPoolConfig: PoolConfig = {
-    user: process.env.DB_USER || "postgres",
+    user: process.env.DB_USERNAME || "postgres",
     host: process.env.DB_HOST || "localhost",
-    password: process.env.DB_PASS || "postgres",
+    password: process.env.DB_PASSWORD || "postgres",
     port: Number(process.env.DB_PORT) || 5432,
     database: "postgres", // Conectamos a la BD por defecto
   };
@@ -125,10 +127,10 @@ export async function createDatabaseIfNotExists(
 
 async function checkPostgreSQLExtensions() {
   const poolConfig: PoolConfig = {
-    user: process.env.DB_USER || "entalla",
+    user: process.env.DB_USERNAME || "entalla",
     host: process.env.DB_HOST || "localhost",
     database: process.env.DB_NAME || "entalla",
-    password: process.env.DB_PASS || "entalla",
+    password: process.env.DB_PASSWORD || "entalla",
     port: Number(process.env.DB_PORT) || 5432,
   };
 
@@ -154,6 +156,97 @@ async function checkPostgreSQLExtensions() {
   }
 }
 
+
+function sha256(value: string): string {
+  return createHash("sha256").update(value).digest("hex");
+}
+
+function escapeSqlLiteral(value: string): string {
+  return value.replace(/'/g, "''");
+}
+
+function interpolateSqlTemplate(sql: string): string {
+  return sql
+    .replace(/\$\{SQL_SHA256:([A-Z0-9_]+)\}/g, (_match, name) => escapeSqlLiteral(sha256(process.env[name] || "")))
+    .replace(/\$\{SHA256:([A-Z0-9_]+)\}/g, (_match, name) => sha256(process.env[name] || ""))
+    .replace(/\$\{SQL:([A-Z0-9_]+)\}/g, (_match, name) => escapeSqlLiteral(process.env[name] || ""))
+    .replace(/\$\{([A-Z0-9_]+)\}/g, (_match, name) => process.env[name] || "");
+}
+
+async function resolveDatabaseScriptDirectory(): Promise<string | null> {
+  const candidates = [
+    path.join(process.cwd(), "src", "database"),
+    path.join(process.cwd(), "database"),
+    path.join(__dirname, "database"),
+    path.join(__dirname, "..", "src", "database"),
+  ];
+  for (const candidate of candidates) {
+    try {
+      const stats = await fs.stat(candidate);
+      if (stats.isDirectory()) return candidate;
+    } catch { /* continuar */ }
+  }
+  return null;
+}
+
+async function resolveDatabaseScripts(scriptDirectory: string, dbType: string): Promise<string[]> {
+  const entries = await fs.readdir(scriptDirectory);
+  const prefix = dbType + "-";
+  const sqlFiles = entries
+    .filter((name) => name.toLowerCase().endsWith(".sql") && name.startsWith(prefix))
+    .sort((a, b) => a.localeCompare(b));
+  const initOrderPath = path.join(scriptDirectory, "init-order.txt");
+  try {
+    const initOrderContent = await fs.readFile(initOrderPath, "utf8");
+    const orderedNames = initOrderContent.split(/[\n,\r]+/).map((i) => i.trim()).filter(Boolean);
+    if (orderedNames.length > 0) return orderedNames.filter((name) => sqlFiles.includes(name));
+  } catch { /* orden alfabético */ }
+  return sqlFiles;
+}
+
+async function runDatabaseInitializationScripts() {
+  if ((process.env.DATABASE_SKIP_INIT_SCRIPTS || "false").toLowerCase() === "true") {
+    logger.log("ℹ️ Se omitieron los scripts de src/database por DATABASE_SKIP_INIT_SCRIPTS=true.");
+    return;
+  }
+  const dbType = (process.env.DB_TYPE || "postgres").trim().toLowerCase();
+  if (dbType !== "postgres") {
+    logger.warn("⚠️ DB_TYPE='" + dbType + "' no tiene ejecutor SQL implementado actualmente.");
+    return;
+  }
+  const scriptDirectory = await resolveDatabaseScriptDirectory();
+  if (!scriptDirectory) {
+    logger.log("ℹ️ No existe carpeta src/database para inicialización adicional.");
+    return;
+  }
+  const orderedScripts = await resolveDatabaseScripts(scriptDirectory, dbType);
+  if (orderedScripts.length === 0) {
+    logger.log("ℹ️ No hay scripts '" + dbType + "-*.sql' para ejecutar en " + scriptDirectory + ".");
+    return;
+  }
+  const pool = new Pool({
+    user: process.env.DB_USERNAME || "postgres",
+    host: process.env.DB_HOST || "localhost",
+    database: process.env.DB_NAME || "entalla",
+    password: process.env.DB_PASSWORD || "postgres",
+    port: Number(process.env.DB_PORT) || 5432,
+  });
+  const client = await pool.connect();
+  try {
+    for (const scriptName of orderedScripts) {
+      const scriptPath = path.join(scriptDirectory, scriptName);
+      const sql = interpolateSqlTemplate(await fs.readFile(scriptPath, "utf8")).trim();
+      if (!sql) { logger.log("ℹ️ Script vacío omitido: " + scriptName); continue; }
+      logger.log("▶ Ejecutando script de inicialización: " + scriptName);
+      await client.query(sql);
+      logger.log("✅ Script ejecutado correctamente: " + scriptName);
+    }
+  } finally {
+    client.release();
+    await pool.end();
+  }
+}
+
 export async function initializeDatabase() {
   try {
     logger.info("Data Source Object: ",AppDataSource);
@@ -161,11 +254,12 @@ export async function initializeDatabase() {
       // Primero verificar/crear la BD
       await createDatabaseIfNotExists(
         process.env.DB_NAME || "entalla",
-        process.env.DB_USER || "entalla"
+        process.env.DB_USERNAME || "entalla"
       );
       // Luego el resto de la inicialización
       await checkPostgreSQLExtensions();
       await AppDataSource.initialize();
+      await runDatabaseInitializationScripts();
       logger.log("📦 DataSource inicializado correctamente");
     }
     return AppDataSource;
