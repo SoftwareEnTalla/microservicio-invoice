@@ -69,6 +69,7 @@ import { AuthInvoiceModule } from "./modules/invoice/modules/auth.module";
 import { KafkaModule as KafkaInvoiceModule } from "./modules/invoice/modules/kafka.module";
 import { HorizontalModule } from "@common/horizontal";
 import { CatalogClientModule } from "./modules/catalog-client/catalog-client.module";
+import { InvoiceLifecycleModule } from "./modules/invoice-lifecycle/invoice-lifecycle.module";
 
 @Module({
   imports: [
@@ -115,6 +116,7 @@ import { CatalogClientModule } from "./modules/catalog-client/catalog-client.mod
      * Módulos Invoice de la aplicación
      */
     InvoiceModule,
+    InvoiceLifecycleModule,
     /**
      * Módulo Logger de la aplicación
      */

@@ -34,11 +34,14 @@ import {
   IsBoolean,
   IsDate,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   IsObject,
+  IsUUID,
   ValidateNested,
 } from 'class-validator';
+import { Float } from '@nestjs/graphql';
 
 
 
@@ -55,6 +58,96 @@ export class BaseInvoiceDto {
   @IsNotEmpty()
   @Field(() => String, { nullable: false })
   name: string = '';
+
+  @ApiProperty({ type: () => String, description: 'Descripcion de la factura', nullable: false })
+  @IsString()
+  @IsNotEmpty()
+  @Field(() => String, { nullable: false })
+  description: string = 'Sin descripción';
+
+  @ApiProperty({ type: () => String, description: 'Numero operativo de la factura', nullable: false })
+  @IsString()
+  @IsNotEmpty()
+  @Field(() => String, { nullable: false })
+  invoiceNumber: string = '';
+
+  @ApiProperty({ type: () => String, description: 'Orden asociada', nullable: false })
+  @IsUUID()
+  @IsNotEmpty()
+  @Field(() => String, { nullable: false })
+  orderId: string = '';
+
+  @ApiProperty({ type: () => String, description: 'Contrato asociado', nullable: true })
+  @IsUUID()
+  @IsOptional()
+  @Field(() => String, { nullable: true })
+  contractId?: string;
+
+  @ApiProperty({ type: () => String, description: 'Milestone CRM asociado', nullable: true })
+  @IsUUID()
+  @IsOptional()
+  @Field(() => String, { nullable: true })
+  milestoneId?: string;
+
+  @ApiProperty({ type: () => String, description: 'Pago asociado', nullable: true })
+  @IsUUID()
+  @IsOptional()
+  @Field(() => String, { nullable: true })
+  paymentId?: string;
+
+  @ApiProperty({ type: () => String, description: 'Estado de la factura', nullable: false })
+  @IsString()
+  @IsNotEmpty()
+  @Field(() => String, { nullable: false })
+  status: string = 'DRAFT';
+
+  @ApiProperty({ type: () => String, description: 'Estado documental de la factura', nullable: false })
+  @IsString()
+  @IsNotEmpty()
+  @Field(() => String, { nullable: false })
+  documentStatus: string = 'DRAFT';
+
+  @ApiProperty({ type: () => String, description: 'Estado de auditoria fiscal', nullable: false })
+  @IsString()
+  @IsNotEmpty()
+  @Field(() => String, { nullable: false })
+  fiscalAuditStatus: string = 'PENDING';
+
+  @ApiProperty({ type: () => String, description: 'Referencia externa de auditoria fiscal', nullable: true })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, { nullable: true })
+  fiscalAuditReference?: string;
+
+  @ApiProperty({ type: () => Number, description: 'Importe total de la factura', nullable: false })
+  @IsNumber()
+  @IsNotEmpty()
+  @Field(() => Float, { nullable: false })
+  totalAmount: number = 0;
+
+  @ApiProperty({ type: () => String, description: 'Moneda de la factura', nullable: false })
+  @IsString()
+  @IsNotEmpty()
+  @Field(() => String, { nullable: false })
+  currency: string = 'USD';
+
+  @ApiProperty({ type: () => Date, description: 'Fecha de emision', nullable: true })
+  @IsDate()
+  @IsOptional()
+  @Field(() => Date, { nullable: true })
+  issuedAt?: Date;
+
+  @ApiProperty({ type: () => Date, description: 'Fecha de vencimiento', nullable: true })
+  @IsDate()
+  @IsOptional()
+  @Field(() => Date, { nullable: true })
+  dueAt?: Date;
+
+  @ApiProperty({ type: () => Date, description: 'Fecha de pago', nullable: true })
+  @IsDate()
+  @IsOptional()
+  @Field(() => Date, { nullable: true })
+  paidAt?: Date;
 
   // Propiedades predeterminadas de la clase CreateInvoiceDto según especificación del sistema
 

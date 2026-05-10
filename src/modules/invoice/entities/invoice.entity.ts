@@ -32,11 +32,11 @@
 import { Column, Entity } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { CreateInvoiceDto,UpdateInvoiceDto,DeleteInvoiceDto } from '../dtos/all-dto';
- 
-import { IsNotEmpty, IsString, validate } from 'class-validator';
+
+import { IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, validate } from 'class-validator';
 import { plainToClass, plainToInstance } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { Field, ObjectType } from "@nestjs/graphql";
+import { Field, Float, ObjectType } from "@nestjs/graphql";
 
 @ObjectType()
 @Entity('invoice')
@@ -64,6 +64,104 @@ export class Invoice extends BaseEntity {
   @Field(() => String, { description: "Descripción de la instancia de Invoice", nullable: false })
   @Column({ type: 'varchar', length: 255, nullable: false,default: "Sin descripción",comment: 'Este es un campo para describir la instancia Invoice' })
   private description!: string ;
+
+  @ApiProperty({ type: () => String, nullable: false, description: 'Numero operativo de la factura' })
+  @IsString()
+  @IsNotEmpty()
+  @Field(() => String, { nullable: true })
+  @Column({ type: 'varchar', length: 60, nullable: true, unique: true, comment: 'Numero operativo de la factura' })
+  invoiceNumber?: string;
+
+  @ApiProperty({ type: () => String, nullable: false, description: 'Orden asociada a la factura' })
+  @IsUUID()
+  @IsNotEmpty()
+  @Field(() => String, { nullable: true })
+  @Column({ type: 'uuid', nullable: true, comment: 'Orden asociada a la factura' })
+  orderId?: string;
+
+  @ApiProperty({ type: () => String, nullable: true, description: 'Contrato asociado a la factura' })
+  @IsUUID()
+  @IsOptional()
+  @Field(() => String, { nullable: true })
+  @Column({ type: 'uuid', nullable: true, comment: 'Contrato asociado a la factura' })
+  contractId?: string;
+
+  @ApiProperty({ type: () => String, nullable: true, description: 'Milestone CRM que gatilla la factura' })
+  @IsUUID()
+  @IsOptional()
+  @Field(() => String, { nullable: true })
+  @Column({ type: 'uuid', nullable: true, comment: 'Milestone CRM que gatilla la factura' })
+  milestoneId?: string;
+
+  @ApiProperty({ type: () => String, nullable: true, description: 'Pago asociado a la factura' })
+  @IsUUID()
+  @IsOptional()
+  @Field(() => String, { nullable: true })
+  @Column({ type: 'uuid', nullable: true, comment: 'Pago asociado a la factura' })
+  paymentId?: string;
+
+  @ApiProperty({ type: () => String, nullable: false, description: 'Estado operativo de la factura' })
+  @IsString()
+  @IsNotEmpty()
+  @Field(() => String, { nullable: true })
+  @Column({ type: 'varchar', length: 40, nullable: true, default: 'DRAFT', comment: 'Estado operativo de la factura' })
+  status?: string;
+
+  @ApiProperty({ type: () => String, nullable: false, description: 'Estado documental de la factura' })
+  @IsString()
+  @IsNotEmpty()
+  @Field(() => String, { nullable: true })
+  @Column({ type: 'varchar', length: 40, nullable: true, default: 'DRAFT', comment: 'Estado documental de la factura' })
+  documentStatus?: string;
+
+  @ApiProperty({ type: () => String, nullable: false, description: 'Estado de auditoria fiscal' })
+  @IsString()
+  @IsNotEmpty()
+  @Field(() => String, { nullable: true })
+  @Column({ type: 'varchar', length: 40, nullable: true, default: 'PENDING', comment: 'Estado de auditoria fiscal' })
+  fiscalAuditStatus?: string;
+
+  @ApiProperty({ type: () => String, nullable: true, description: 'Referencia externa de auditoria fiscal' })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, { nullable: true })
+  @Column({ type: 'varchar', length: 120, nullable: true, comment: 'Referencia externa de auditoria fiscal' })
+  fiscalAuditReference?: string;
+
+  @ApiProperty({ type: () => Number, nullable: false, description: 'Importe total de la factura' })
+  @IsNumber()
+  @IsNotEmpty()
+  @Field(() => Float, { nullable: true })
+  @Column({ type: 'decimal', precision: 14, scale: 2, nullable: true, default: 0, comment: 'Importe total de la factura' })
+  totalAmount?: number;
+
+  @ApiProperty({ type: () => String, nullable: false, description: 'Moneda de la factura' })
+  @IsString()
+  @IsNotEmpty()
+  @Field(() => String, { nullable: true })
+  @Column({ type: 'varchar', length: 3, nullable: true, default: 'USD', comment: 'Moneda de la factura' })
+  currency?: string;
+
+  @ApiProperty({ type: () => Date, nullable: true, description: 'Fecha de emision' })
+  @IsDate()
+  @IsOptional()
+  @Field(() => Date, { nullable: true })
+  @Column({ type: 'timestamp', nullable: true, comment: 'Fecha de emision' })
+  issuedAt?: Date;
+
+  @ApiProperty({ type: () => Date, nullable: true, description: 'Fecha de vencimiento' })
+  @IsDate()
+  @IsOptional()
+  @Field(() => Date, { nullable: true })
+  @Column({ type: 'timestamp', nullable: true, comment: 'Fecha de vencimiento' })
+  dueAt?: Date;
+
+  @ApiProperty({ type: () => Date, nullable: true, description: 'Fecha efectiva de pago' })
+  @IsDate()
+  @IsOptional()
+  @Field(() => Date, { nullable: true })
+  @Column({ type: 'timestamp', nullable: true, comment: 'Fecha efectiva de pago' })
+  paidAt?: Date;
 
   // Constructor de Invoice
   constructor() {
