@@ -7,10 +7,12 @@ type InvoiceLifecycleRow = {
   name: string;
   invoiceNumber: string | null;
   orderId: string | null;
+  paymentId: string | null;
   status: string | null;
   documentStatus: string | null;
   fiscalAuditStatus: string | null;
   fiscalAuditReference: string | null;
+  documentClosureStage: string | null;
   totalAmount: number;
   currency: string | null;
   issuedAt: string | null;
@@ -43,6 +45,7 @@ export class InvoiceLifecycleService {
             auditedInvoices: 0,
             pendingAuditInvoices: 0,
             linkedOrdersInvoices: 0,
+            linkedPaymentsInvoices: 0,
             overdueInvoices: 0,
             collectibleInvoices: 0,
             documentClosureReadyInvoices: 0,
@@ -65,6 +68,7 @@ export class InvoiceLifecycleService {
          COUNT(*) FILTER (WHERE UPPER(COALESCE("fiscalAuditStatus", '')) IN ('APPROVED', 'COMPLETED', 'AUDITED'))::int AS "auditedInvoices",
          COUNT(*) FILTER (WHERE UPPER(COALESCE("fiscalAuditStatus", 'PENDING')) = 'PENDING')::int AS "pendingAuditInvoices",
          COUNT(*) FILTER (WHERE COALESCE(NULLIF("orderId"::text, ''), '') <> '')::int AS "linkedOrdersInvoices",
+         COUNT(*) FILTER (WHERE COALESCE(NULLIF("paymentId"::text, ''), '') <> '')::int AS "linkedPaymentsInvoices",
          COUNT(*) FILTER (WHERE COALESCE("dueAt", NULL) IS NOT NULL AND "dueAt" < CURRENT_DATE AND COALESCE("paidAt", NULL) IS NULL AND UPPER(COALESCE(status, '')) NOT IN ('PAID','CANCELLED'))::int AS "overdueInvoices",
          COUNT(*) FILTER (WHERE UPPER(COALESCE(status, '')) = 'ISSUED' AND COALESCE("paidAt", NULL) IS NULL)::int AS "collectibleInvoices",
          COUNT(*) FILTER (WHERE UPPER(COALESCE("documentStatus", '')) IN ('DELIVERED','ACCEPTED') AND COALESCE("paidAt", NULL) IS NOT NULL)::int AS "documentClosureReadyInvoices"
@@ -73,7 +77,15 @@ export class InvoiceLifecycleService {
     );
 
     const latest = await dataSource.query(
-            `SELECT id, name, "invoiceNumber", "orderId", status, "documentStatus", "fiscalAuditStatus", "fiscalAuditReference",
+            `SELECT id, name, "invoiceNumber", "orderId", "paymentId", status, "documentStatus", "fiscalAuditStatus", "fiscalAuditReference",
+              CASE
+                WHEN UPPER(COALESCE("documentStatus", '')) IN ('DELIVERED', 'ACCEPTED') AND COALESCE("paidAt", NULL) IS NOT NULL THEN 'READY_FOR_PAYOUT_CLOSURE'
+                WHEN COALESCE("paidAt", NULL) IS NOT NULL THEN 'PAID_PENDING_DOCUMENT'
+                WHEN COALESCE(NULLIF("paymentId"::text, ''), '') <> '' THEN 'PAYMENT_LINKED'
+                WHEN COALESCE(NULLIF("orderId"::text, ''), '') <> '' THEN 'ORDER_LINKED'
+                WHEN UPPER(COALESCE(status, 'DRAFT')) = 'ISSUED' THEN 'ISSUED_PENDING_COLLECTION'
+                ELSE 'DRAFT_PENDING_CONTINUITY'
+              END AS "documentClosureStage",
               COALESCE("totalAmount", 0)::float AS "totalAmount", currency, "issuedAt", "dueAt", "paidAt", "creationDate", "modificationDate"
        FROM invoice
        WHERE COALESCE("isActive", true) = true
@@ -100,6 +112,7 @@ export class InvoiceLifecycleService {
           auditedInvoices: Number(totals?.auditedInvoices ?? 0),
           pendingAuditInvoices: Number(totals?.pendingAuditInvoices ?? 0),
           linkedOrdersInvoices: Number(totals?.linkedOrdersInvoices ?? 0),
+          linkedPaymentsInvoices: Number(totals?.linkedPaymentsInvoices ?? 0),
           overdueInvoices: Number(totals?.overdueInvoices ?? 0),
           collectibleInvoices: Number(totals?.collectibleInvoices ?? 0),
           documentClosureReadyInvoices: Number(totals?.documentClosureReadyInvoices ?? 0),
