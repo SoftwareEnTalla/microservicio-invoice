@@ -39,6 +39,7 @@ import {
   NotFoundException,
   Get,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from "@nestjs/swagger";
 import { InvoiceCommandService } from "../services/invoicecommand.service";
@@ -61,6 +62,8 @@ import { CommandBus } from "@nestjs/cqrs";
 //import { InvoiceCreatedEvent } from "../events/invoicecreated.event";
 import { EventStoreService } from "../shared/event-store/event-store.service";
 import { KafkaEventPublisher } from "../shared/adapters/kafka-event-publisher";
+import { FinancialAction } from '../../../common/financial-security/financial-action.decorator';
+import { FinancialActionGuard } from '../../../common/financial-security/financial-action.guard';
 
 @ApiTags("Invoice Command")
 @Controller("invoices/command")
@@ -182,6 +185,18 @@ export class InvoiceCommandController {
       "EL ID en la URL no coincide con la instancia Invoice a actualizar.",
   }) // ✅ Nuevo status para el error de validación
   @Put(":id")
+  @UseGuards(FinancialActionGuard)
+  @FinancialAction({
+    policyCode: 'INVOICE_FINANCIAL_STATE_TRANSITION',
+    actionType: 'INVOICE_FINANCIAL_STATE_TRANSITION',
+    targetType: 'invoice',
+    requiredPermissions: ['invoice_manage', 'invoice_approve', 'invoice_adjust', 'invoice_refund', 'erp_all'],
+    watchedFields: [
+      { field: 'status', values: ['ISSUED', 'PAID', 'CANCELLED', 'VOID', 'OVERDUE', 'REFUNDED', 'REVERSED', 'ADJUSTED'] },
+      { field: 'documentStatus', values: ['ISSUED', 'SENT', 'ACCEPTED', 'REJECTED', 'CANCELLED'] },
+      { field: 'fiscalAuditStatus', values: ['IN_REVIEW', 'APPROVED', 'REJECTED', 'OBSERVED', 'AUDITED', 'COMPLETED'] },
+    ],
+  })
   @LogExecutionTime({
     layer: "controller",
     callback: async (logData, client) => {

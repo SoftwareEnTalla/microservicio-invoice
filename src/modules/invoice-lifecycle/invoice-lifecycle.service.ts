@@ -42,14 +42,20 @@ export class InvoiceLifecycleService {
             paidInvoices: 0,
             cancelledInvoices: 0,
             sentDocuments: 0,
+            rejectedDocuments: 0,
             auditedInvoices: 0,
             pendingAuditInvoices: 0,
+            fiscalErrorInvoices: 0,
             linkedOrdersInvoices: 0,
             linkedPaymentsInvoices: 0,
             overdueInvoices: 0,
+            upcomingDueInvoices: 0,
             collectibleInvoices: 0,
+            reconciledInvoices: 0,
             documentClosureReadyInvoices: 0,
             issuanceRatePercent: 0,
+            collectionDocumentedPercent: 0,
+            fiscalCleanRatePercent: 0,
           },
           latest: [],
         },
@@ -65,12 +71,16 @@ export class InvoiceLifecycleService {
          COUNT(*) FILTER (WHERE UPPER(COALESCE(status, '')) = 'PAID')::int AS "paidInvoices",
          COUNT(*) FILTER (WHERE UPPER(COALESCE(status, '')) = 'CANCELLED')::int AS "cancelledInvoices",
          COUNT(*) FILTER (WHERE UPPER(COALESCE("documentStatus", '')) IN ('SENT', 'DELIVERED', 'ACCEPTED'))::int AS "sentDocuments",
+         COUNT(*) FILTER (WHERE UPPER(COALESCE("documentStatus", '')) IN ('REJECTED', 'FAILED', 'ERROR'))::int AS "rejectedDocuments",
          COUNT(*) FILTER (WHERE UPPER(COALESCE("fiscalAuditStatus", '')) IN ('APPROVED', 'COMPLETED', 'AUDITED'))::int AS "auditedInvoices",
          COUNT(*) FILTER (WHERE UPPER(COALESCE("fiscalAuditStatus", 'PENDING')) = 'PENDING')::int AS "pendingAuditInvoices",
+         COUNT(*) FILTER (WHERE UPPER(COALESCE("fiscalAuditStatus", '')) IN ('REJECTED', 'FAILED', 'ERROR'))::int AS "fiscalErrorInvoices",
          COUNT(*) FILTER (WHERE COALESCE(NULLIF("orderId"::text, ''), '') <> '')::int AS "linkedOrdersInvoices",
          COUNT(*) FILTER (WHERE COALESCE(NULLIF("paymentId"::text, ''), '') <> '')::int AS "linkedPaymentsInvoices",
          COUNT(*) FILTER (WHERE COALESCE("dueAt", NULL) IS NOT NULL AND "dueAt" < CURRENT_DATE AND COALESCE("paidAt", NULL) IS NULL AND UPPER(COALESCE(status, '')) NOT IN ('PAID','CANCELLED'))::int AS "overdueInvoices",
+         COUNT(*) FILTER (WHERE COALESCE("dueAt", NULL) IS NOT NULL AND "dueAt" >= CURRENT_DATE AND "dueAt" < CURRENT_DATE + INTERVAL '7 days' AND COALESCE("paidAt", NULL) IS NULL AND UPPER(COALESCE(status, '')) NOT IN ('PAID','CANCELLED'))::int AS "upcomingDueInvoices",
          COUNT(*) FILTER (WHERE UPPER(COALESCE(status, '')) = 'ISSUED' AND COALESCE("paidAt", NULL) IS NULL)::int AS "collectibleInvoices",
+         COUNT(*) FILTER (WHERE COALESCE("paidAt", NULL) IS NOT NULL AND COALESCE(NULLIF("paymentId"::text, ''), '') <> '')::int AS "reconciledInvoices",
          COUNT(*) FILTER (WHERE UPPER(COALESCE("documentStatus", '')) IN ('DELIVERED','ACCEPTED') AND COALESCE("paidAt", NULL) IS NOT NULL)::int AS "documentClosureReadyInvoices"
        FROM invoice
        WHERE COALESCE("isActive", true) = true`,
@@ -97,6 +107,7 @@ export class InvoiceLifecycleService {
     const totalInvoices = Number(totals?.totalInvoices ?? 0);
     const issuedInvoices = Number(totals?.issuedInvoices ?? 0);
     const paidInvoices = Number(totals?.paidInvoices ?? 0);
+    const processedInvoices = Math.max(totalInvoices - Number(totals?.draftInvoices ?? 0), 0);
 
     return {
       ok: true,
@@ -109,14 +120,22 @@ export class InvoiceLifecycleService {
           paidInvoices,
           cancelledInvoices: Number(totals?.cancelledInvoices ?? 0),
           sentDocuments: Number(totals?.sentDocuments ?? 0),
+          rejectedDocuments: Number(totals?.rejectedDocuments ?? 0),
           auditedInvoices: Number(totals?.auditedInvoices ?? 0),
           pendingAuditInvoices: Number(totals?.pendingAuditInvoices ?? 0),
+          fiscalErrorInvoices: Number(totals?.fiscalErrorInvoices ?? 0),
           linkedOrdersInvoices: Number(totals?.linkedOrdersInvoices ?? 0),
           linkedPaymentsInvoices: Number(totals?.linkedPaymentsInvoices ?? 0),
           overdueInvoices: Number(totals?.overdueInvoices ?? 0),
+          upcomingDueInvoices: Number(totals?.upcomingDueInvoices ?? 0),
           collectibleInvoices: Number(totals?.collectibleInvoices ?? 0),
+          reconciledInvoices: Number(totals?.reconciledInvoices ?? 0),
           documentClosureReadyInvoices: Number(totals?.documentClosureReadyInvoices ?? 0),
           issuanceRatePercent: totalInvoices > 0 ? Math.round(((issuedInvoices + paidInvoices) / totalInvoices) * 100) : 0,
+          collectionDocumentedPercent: totalInvoices > 0 ? Math.round((Number(totals?.documentClosureReadyInvoices ?? 0) / totalInvoices) * 100) : 0,
+          fiscalCleanRatePercent: processedInvoices > 0
+            ? Math.round(((processedInvoices - Number(totals?.fiscalErrorInvoices ?? 0)) / processedInvoices) * 100)
+            : 0,
         },
         latest: latest as InvoiceLifecycleRow[],
       },

@@ -41,7 +41,7 @@ import { InvoiceResolver } from "../graphql/invoice.resolver";
 import { InvoiceAuthGuard } from "../guards/invoiceauthguard.guard";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Invoice } from "../entities/invoice.entity";
-import { CommandBus, EventBus, UnhandledExceptionBus } from "@nestjs/cqrs";
+import { CqrsModule } from "@nestjs/cqrs";
 import { CacheModule } from "@nestjs/cache-manager";
 
 //Interceptors
@@ -51,10 +51,16 @@ import { InvoiceLoggingInterceptor } from "../interceptors/invoice.logging.inter
 //Event-Sourcing dependencies
 import { EventStoreService } from "../shared/event-store/event-store.service";
 import { KafkaEventPublisher } from "../shared/adapters/kafka-event-publisher";
-import { KafkaService } from "../shared/messaging/kafka.service";
+import { KafkaModule } from "./kafka.module";
+import { FinancialActionGuard } from '../../../common/financial-security/financial-action.guard';
+import { SecurityAuditBridgeService } from '../../../common/financial-security/security-audit-bridge.service';
+import { SecurityIdentityBridgeService } from '../../../common/financial-security/security-identity-bridge.service';
+import { InvoiceCrudSaga } from "../sagas/invoice-crud.saga";
 
 @Module({
   imports: [
+    CqrsModule,
+    KafkaModule,
     TypeOrmModule.forFeature([Invoice]), // Asegúrate de incluir esto
     CacheModule.register(), // Importa el módulo de caché
   ],
@@ -62,7 +68,6 @@ import { KafkaService } from "../shared/messaging/kafka.service";
   providers: [
     //Services
     EventStoreService,
-    KafkaService,
     InvoiceQueryService,
     InvoiceCommandService,
     //Repositories
@@ -73,20 +78,19 @@ import { KafkaService } from "../shared/messaging/kafka.service";
     InvoiceResolver,
     //Guards
     InvoiceAuthGuard,
+    FinancialActionGuard,
     //Interceptors
     InvoiceInterceptor,
     InvoiceLoggingInterceptor,
-    //Publishers
-    KafkaEventPublisher,
-    //Others dependencies
-    UnhandledExceptionBus, // Manejador global de excepciones
-    CommandBus, // Bus de comandos
-    EventBus, // Bus de eventos
+    InvoiceCrudSaga,
+    SecurityAuditBridgeService,
+    SecurityIdentityBridgeService,
   ],
   exports: [
+    CqrsModule,
+    KafkaModule,
     //Services
     EventStoreService,
-    KafkaService,
     InvoiceQueryService,
     InvoiceCommandService,
     //Repositories
@@ -97,15 +101,13 @@ import { KafkaService } from "../shared/messaging/kafka.service";
     InvoiceResolver,
     //Guards
     InvoiceAuthGuard,
+    FinancialActionGuard,
     //Interceptors
     InvoiceInterceptor,
     InvoiceLoggingInterceptor,
-    //Publishers
-    KafkaEventPublisher,
-    //Others dependencies
-    UnhandledExceptionBus, // Manejador global de excepciones
-    CommandBus, // Bus de comandos
-    EventBus, // Bus de eventos
+    InvoiceCrudSaga,
+    SecurityAuditBridgeService,
+    SecurityIdentityBridgeService,
   ],
 })
 export class InvoiceModule {}

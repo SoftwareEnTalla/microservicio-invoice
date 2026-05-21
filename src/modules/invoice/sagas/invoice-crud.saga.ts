@@ -29,9 +29,11 @@
  */
 
 
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import { Saga, CommandBus, EventBus, ofType } from '@nestjs/cqrs';
-import { Observable, filter, map, tap } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 import {
   InvoiceCreatedEvent,
   InvoiceUpdatedEvent,
@@ -57,7 +59,8 @@ export class InvoiceCrudSaga {
 
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly eventBus: EventBus
+    private readonly eventBus: EventBus,
+    @Optional() @InjectDataSource() private readonly dataSource: DataSource | undefined,
   ) {}
 
   // Reacción a evento de creación
@@ -126,6 +129,7 @@ export class InvoiceCrudSaga {
   })
   private async handleInvoiceCreated(event: InvoiceCreatedEvent): Promise<void> {
     try {
+      await this.materializeFiscalAudit(event);
       this.logger.log(`Saga Invoice Created completada: ${event.aggregateId}`);
     } catch (error: any) {
       this.handleSagaError(error, event);
@@ -150,6 +154,7 @@ export class InvoiceCrudSaga {
   })
   private async handleInvoiceUpdated(event: InvoiceUpdatedEvent): Promise<void> {
     try {
+      await this.materializeFiscalAudit(event);
       this.logger.log(`Saga Invoice Updated completada: ${event.aggregateId}`);
     } catch (error: any) {
       this.handleSagaError(error, event);
@@ -184,5 +189,78 @@ export class InvoiceCrudSaga {
   private handleSagaError(error: Error, event: any) {
     this.logger.error(`Error en saga para evento ${event.constructor.name}: ${error.message}`);
     this.eventBus.publish(new SagaInvoiceFailedEvent( error,event));
+  }
+
+  private async materializeFiscalAudit(event: InvoiceCreatedEvent | InvoiceUpdatedEvent): Promise<void> {
+    const dataSource = this.resolveDataSource();
+    if (!dataSource) {
+      this.logger.warn(`Saga Invoice sin DataSource para materializar fiscal audit de ${event.aggregateId}`);
+      return;
+    }
+
+    const [invoice] = await dataSource.query(
+      `SELECT id, "invoiceNumber", status, "documentStatus", "paymentId", "paidAt", "fiscalAuditStatus", "fiscalAuditReference"
+       FROM invoice
+       WHERE id = $1 AND COALESCE("isActive", true) = true
+       LIMIT 1`,
+      [event.aggregateId],
+    );
+
+    if (!invoice) {
+      return;
+    }
+
+    const nextState = this.deriveFiscalAuditState(invoice);
+    const nextReference = nextState === 'PENDING'
+      ? null
+      : `fiscal:${String(invoice.invoiceNumber || invoice.id)}:${nextState.toLowerCase()}`;
+
+    if (
+      String(invoice.fiscalAuditStatus || 'PENDING').toUpperCase() === nextState
+      && String(invoice.fiscalAuditReference || '') === String(nextReference || '')
+    ) {
+      return;
+    }
+
+    await dataSource.query(
+      `UPDATE invoice
+       SET "fiscalAuditStatus" = $2,
+           "fiscalAuditReference" = $3,
+           "modificationDate" = NOW()
+       WHERE id = $1`,
+      [event.aggregateId, nextState, nextReference],
+    );
+
+    this.logger.log(`Saga Invoice materializó fiscalAuditStatus=${nextState} para ${event.aggregateId}`);
+  }
+
+  private deriveFiscalAuditState(invoice: Record<string, any>): string {
+    const status = String(invoice?.status || 'DRAFT').toUpperCase();
+    const documentStatus = String(invoice?.documentStatus || 'DRAFT').toUpperCase();
+    const hasPaymentLink = Boolean(invoice?.paymentId);
+    const isPaid = Boolean(invoice?.paidAt) || status === 'PAID';
+
+    if (['REJECTED', 'FAILED', 'ERROR'].includes(documentStatus)) {
+      return 'REJECTED';
+    }
+    if (['DELIVERED', 'ACCEPTED'].includes(documentStatus) && isPaid) {
+      return 'COMPLETED';
+    }
+    if (['DELIVERED', 'ACCEPTED'].includes(documentStatus)) {
+      return 'APPROVED';
+    }
+    if (documentStatus === 'SENT' || status === 'ISSUED' || isPaid || hasPaymentLink) {
+      return 'IN_REVIEW';
+    }
+
+    return 'PENDING';
+  }
+
+  private resolveDataSource(): DataSource | null {
+    if (this.dataSource?.isInitialized) {
+      return this.dataSource;
+    }
+
+    return null;
   }
 }
