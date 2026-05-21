@@ -34,11 +34,15 @@ import { CqrsModule } from "@nestjs/cqrs";
 import { KafkaService } from "../shared/messaging/kafka.service";
 import { KafkaEventPublisher } from "../shared/adapters/kafka-event-publisher";
 import { KafkaEventSubscriber } from "../shared/adapters/kafka-event-subscriber";
+import { EventIdempotencyService } from "../shared/messaging/event-idempotency.service";
+import { KafkaDeadLetterService } from "../shared/messaging/kafka-dead-letter.service";
 
 @Module({
   imports: [CqrsModule],
   providers: [
     KafkaService,
+    EventIdempotencyService,
+    KafkaDeadLetterService,
     KafkaEventPublisher,
     KafkaEventSubscriber,
     {
@@ -46,7 +50,7 @@ import { KafkaEventSubscriber } from "../shared/adapters/kafka-event-subscriber"
       useExisting: KafkaEventPublisher,
     },
   ],
-  exports: [KafkaService, KafkaEventPublisher, KafkaEventSubscriber],
+  exports: [KafkaService, EventIdempotencyService, KafkaDeadLetterService, KafkaEventPublisher, KafkaEventSubscriber],
 })
 export class KafkaModule implements OnModuleInit {
   private readonly logger = new Logger(KafkaModule.name);
@@ -65,7 +69,7 @@ export class KafkaModule implements OnModuleInit {
       this.logger.log("Successfully connected to Kafka");
 
       // 2. Inicializar el suscriptor de eventos
-      await this.kafkaSubscriber.onModuleInit();
+      await this.kafkaSubscriber.initializeSubscriptions();
       this.logger.log("Kafka event subscribers initialized");
 
       // 3. Opcional: Verificar conexión con un ping
@@ -111,7 +115,7 @@ export class KafkaModule implements OnModuleInit {
       try {
         await new Promise((resolve) => setTimeout(resolve, retryDelay));
         await this.kafkaService.connect();
-        await this.kafkaSubscriber.onModuleInit();
+        await this.kafkaSubscriber.initializeSubscriptions();
         this.logger.log("Kafka module recovered after retry");
         return;
       } catch (retryError: any) {

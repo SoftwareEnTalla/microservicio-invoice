@@ -43,6 +43,12 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { Invoice } from "../entities/invoice.entity";
 import { CqrsModule } from "@nestjs/cqrs";
 import { CacheModule } from "@nestjs/cache-manager";
+import { CreateInvoiceHandler } from "../commands/handlers/createinvoice.handler";
+import { UpdateInvoiceHandler } from "../commands/handlers/updateinvoice.handler";
+import { DeleteInvoiceHandler } from "../commands/handlers/deleteinvoice.handler";
+import { GetInvoiceByIdHandler } from "../queries/handlers/getinvoicebyid.handler";
+import { GetInvoiceByFieldHandler } from "../queries/handlers/getinvoicebyfield.handler";
+import { GetAllInvoiceHandler } from "../queries/handlers/getallinvoice.handler";
 
 //Interceptors
 import { InvoiceInterceptor } from "../interceptors/invoice.interceptor";
@@ -56,6 +62,8 @@ import { FinancialActionGuard } from '../../../common/financial-security/financi
 import { SecurityAuditBridgeService } from '../../../common/financial-security/security-audit-bridge.service';
 import { SecurityIdentityBridgeService } from '../../../common/financial-security/security-identity-bridge.service';
 import { InvoiceCrudSaga } from "../sagas/invoice-crud.saga";
+import { InvoiceRefundRequestedSyncSaga } from "../sagas/invoice-refund-requested-sync.saga";
+import { EVENT_TOPICS } from "../events/event-registry";
 
 @Module({
   imports: [
@@ -82,9 +90,28 @@ import { InvoiceCrudSaga } from "../sagas/invoice-crud.saga";
     //Interceptors
     InvoiceInterceptor,
     InvoiceLoggingInterceptor,
+    //CQRS Handlers
+    CreateInvoiceHandler,
+    UpdateInvoiceHandler,
+    DeleteInvoiceHandler,
+    GetInvoiceByIdHandler,
+    GetInvoiceByFieldHandler,
+    GetAllInvoiceHandler,
     InvoiceCrudSaga,
+    InvoiceRefundRequestedSyncSaga,
     SecurityAuditBridgeService,
     SecurityIdentityBridgeService,
+    {
+      provide: 'EVENT_SOURCING_CONFIG',
+      useFactory: () => ({
+        enabled: process.env.EVENT_SOURCING_ENABLED !== 'false',
+        kafkaEnabled: process.env.KAFKA_ENABLED !== 'false',
+        eventStoreEnabled: process.env.EVENT_STORE_ENABLED === 'true',
+        publishEvents: true,
+        useProjections: true,
+        topics: EVENT_TOPICS,
+      })
+    },
   ],
   exports: [
     CqrsModule,

@@ -31,38 +31,17 @@
 
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { UpdateInvoiceCommand } from "../updateinvoice.command";
-import { KafkaEventPublisher } from "../../shared/adapters/kafka-event-publisher";
-import { KafkaEventSubscriber } from "../../shared/adapters/kafka-event-subscriber";
-import { EventStoreService } from "../../shared/event-store/event-store.service";
-import { InvoiceCreatedEvent } from "../../events/invoicecreated.event";
-import { v4 as uuidv4 } from "uuid";
+import { InvoiceCommandService } from "../../services/invoicecommand.service";
 
 @CommandHandler(UpdateInvoiceCommand)
 export class UpdateInvoiceHandler
   implements ICommandHandler<UpdateInvoiceCommand>
 {
   constructor(
-    private readonly eventPublisher: KafkaEventPublisher,
-    private readonly eventSubscriber: KafkaEventSubscriber,
-    private readonly eventStore: EventStoreService
+    private readonly commandService: InvoiceCommandService
   ) {}
   async execute(command: UpdateInvoiceCommand) {
-    command.id = command.id || uuidv4(); // Generar ID si no existe
-    // Implementar lógica del comando
-    const event = new InvoiceCreatedEvent(command.id, command.metadata || command.metadata || {
-        instance: {},
-        metadata: {
-          initiatedBy: 'system',
-          correlationId: command.id,
-        },
-      });
-
-    // 1. Persistir en event store
-    await this.eventStore.appendEvent("invoice", event);
-
-    // 2. Publicar a Kafka (y por tanto a otros microservicios)
-    await this.eventPublisher.publish(event);
-
-    return event;
+    const id = String(command.payload?.id ?? command.id ?? '');
+    return await this.commandService.update(id, command.payload);
   }
 }

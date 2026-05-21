@@ -37,6 +37,9 @@ import { logger } from '@core/logs/logger';
 @Injectable()
 export class KafkaService implements OnModuleDestroy {
   private readonly logger = new Logger(KafkaService.name);
+  private readonly moduleMessagingKey = 'invoice';
+  private readonly kafkaClientId: string;
+  private readonly kafkaGroupId: string;
   private kafka: Kafka;
   private producer: Producer;
   private consumer: Consumer;
@@ -45,11 +48,17 @@ export class KafkaService implements OnModuleDestroy {
   private adminClient: Admin | null = null;
 
   constructor() {
+    const brokers = ((process.env.KAFKA_BROKERS || 'kafka:9092').split(',').map((broker) => broker.trim()).filter(Boolean));
+    const baseClientId = (process.env.KAFKA_CLIENT_ID || 'nestjs-client').trim();
+    const baseGroupId = (process.env.KAFKA_GROUP_ID || 'nestjs-group').trim();
+    this.kafkaClientId = baseClientId + '-' + this.moduleMessagingKey;
+    this.kafkaGroupId = baseGroupId + '-' + this.moduleMessagingKey;
     this.kafka = new Kafka({
-      brokers: ((process.env.KAFKA_BROKERS || "kafka:9092").split(",").map(b => b.trim()).filter(Boolean)),
+      clientId: this.kafkaClientId,
+      brokers,
     });
     this.producer = this.kafka.producer();
-    this.consumer = this.kafka.consumer({ groupId: process.env.KAFKA_GROUP_ID || "nestjs-group" });
+    this.consumer = this.kafka.consumer({ groupId: this.kafkaGroupId });
     this.adminClient = this.kafka.admin();
   }
 
