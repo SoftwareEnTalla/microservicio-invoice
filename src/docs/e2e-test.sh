@@ -47,7 +47,7 @@ CODE=$(extract_code "$RESP")
 
 log_step 1 "Crear invoice"
 PAYLOAD=$(cat <<JSON
-{"name":"INV-$UNIQUE","invoiceNumber":"INV-$UNIQUE","clientId":"client-$UNIQUE","total":100.0,"currency":"USD","status":"DRAFT","issueDate":"$NOW","creationDate":"$NOW","modificationDate":"$NOW","isActive":true}
+{"name":"INV-$UNIQUE","description":"Factura E2E $UNIQUE","invoiceNumber":"INV-$UNIQUE","orderId":"11111111-1111-4111-8111-111111111111","status":"DRAFT","documentStatus":"DRAFT","fiscalAuditStatus":"PENDING","totalAmount":100.0,"currency":"USD","issuedAt":"$NOW","creationDate":"$NOW","modificationDate":"$NOW","isActive":true}
 JSON
 )
 RESP=$(do_post "$BASE_URL/invoices/command" "$PAYLOAD")
